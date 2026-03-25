@@ -1,0 +1,46 @@
+name: IPO & Investment Opportunity Monitor
+
+on:
+  schedule:
+    # Runs every 30 minutes. GitHub may delay by a few minutes — that's fine.
+    - cron: '*/30 * * * *'
+  workflow_dispatch:  # lets you trigger a manual run from the GitHub Actions UI
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # needed to commit state.db back to the repo
+
+    steps:
+      - name: Checkout repo (including state.db)
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run monitors
+        env:
+          EMAIL_SENDER:    ${{ secrets.EMAIL_SENDER }}
+          EMAIL_PASSWORD:  ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
+          # Optional — leave the secret blank/unset to use Google News RSS only
+          NEWS_API_KEY:    ${{ secrets.NEWS_API_KEY }}
+        run: python main.py --once
+
+      - name: Persist dedup state (commit state.db)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add state.db
+          # Only commit if state.db actually changed; [skip ci] stops a trigger loop
+          git diff --staged --quiet || git commit -m "chore: update monitor state [skip ci]"
+          git push

@@ -10,6 +10,7 @@ TARGET_COMPANIES = [
     "Stripe",
     "Databricks",
     "Epic Games",
+    "Anduril",
 ]
 
 # Estimated valuations (USD billions) for context in alerts — keep roughly updated
@@ -20,6 +21,7 @@ COMPANY_VALUATIONS = {
     "Stripe":     "~$65B",
     "Databricks": "~$62B",
     "Epic Games": "~$32B",
+    "Anduril":    "~$28B",
 }
 
 # Already-known public companies / funds that hold these private stakes.
