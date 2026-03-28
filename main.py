@@ -36,13 +36,18 @@ from monitors.news_monitor import check_news
 from monitors.holdings_monitor import check_holdings
 
 
-def _validate_env() -> None:
+def _email_configured() -> bool:
+    """Return True if all email credentials are present in the environment."""
     required = ["EMAIL_SENDER", "EMAIL_PASSWORD", "EMAIL_RECIPIENT"]
     missing = [k for k in required if not os.getenv(k)]
     if missing:
-        log.error("Missing required environment variables: %s", ", ".join(missing))
-        log.error("Copy .env.example → .env and fill in your email credentials.")
-        sys.exit(1)
+        log.warning(
+            "Email not configured — skipping send. "
+            "Add these as GitHub Secrets: %s",
+            ", ".join(missing),
+        )
+        return False
+    return True
 
 
 def run_all_checks() -> None:
@@ -75,7 +80,12 @@ def run_all_checks() -> None:
         log.info("No new alerts this cycle.")
         return
 
-    log.info("Found %d new alert(s) — sending email.", len(alerts))
+    log.info("Found %d new alert(s).", len(alerts))
+
+    if not _email_configured():
+        log.info("Alerts found but email is not configured — nothing sent.")
+        return
+
     subject, html = build_email_content(alerts)
     if subject and html:
         notifier.send_email(subject, html)
@@ -91,7 +101,6 @@ def run_scheduler() -> None:
 
     scheduler = BlockingScheduler(timezone="UTC")
 
-    # Run once at startup, then on schedule
     scheduler.add_job(run_all_checks, "interval", minutes=min(sec_interval, news_interval, hold_interval),
                       id="full_check", next_run_time=datetime.utcnow())
 
@@ -114,7 +123,6 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    _validate_env()
     database.init_db()
 
     if args.once:
