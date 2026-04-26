@@ -3,28 +3,120 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="refresh" content="1800">  <!-- auto-reload every 30 min -->
   <title>IPO &amp; Investment Watchlist</title>
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-           background: #f3f4f6; display: flex; align-items: center; justify-content: center;
-           min-height: 100vh; margin: 0; }
-    .box { background: #fff; border-radius: 14px; padding: 48px 40px; text-align: center;
-           max-width: 480px; box-shadow: 0 4px 20px rgba(0,0,0,.08); }
-    h1 { font-size: 22px; color: #1e3a5f; margin-bottom: 12px; }
-    p  { color: #6b7280; font-size: 15px; line-height: 1.6; }
-    .spinner { width: 40px; height: 40px; border: 4px solid #e5e7eb;
-               border-top-color: #2563eb; border-radius: 50%;
-               animation: spin 1s linear infinite; margin: 0 auto 24px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+            background: #f3f4f6; color: #111827; padding: 24px; }
+    .wrap { max-width: 960px; margin: 0 auto; }
+    header { background: linear-gradient(135deg,#1e3a5f,#2563eb); color: #fff;
+              padding: 32px 28px; border-radius: 14px; margin-bottom: 24px; }
+    header h1 { font-size: 26px; margin-bottom: 8px; }
+    header p  { opacity: .8; font-size: 14px; line-height: 1.6; }
+    section { background: #fff; border-radius: 12px; padding: 24px;
+               margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+    section h2 { font-size: 18px; color: #1e3a5f; padding-bottom: 12px;
+                  border-bottom: 2px solid #e5e7eb; margin-bottom: 18px; }
+    .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+    .empty { color: #9ca3af; font-style: italic; padding: 8px 0; font-size: 14px; }
+    footer { text-align: center; font-size: 12px; color: #9ca3af; margin-top: 32px; }
+    @media(max-width:600px) { body { padding: 12px; } header { padding: 20px; } }
   </style>
 </head>
 <body>
-  <div class="box">
-    <div class="spinner"></div>
-    <h1>IPO &amp; Investment Watchlist</h1>
-    <p>The first monitor run hasn't completed yet.<br>
-       GitHub Actions will update this page within 30&nbsp;minutes.<br>
-       Refresh to check.</p>
-  </div>
+<div class="wrap">
+
+  <header>
+    <h1>&#128202; IPO &amp; Investment Watchlist</h1>
+    <p>Tracks publicly traded companies and funds that hold stakes in high-value private unicorns.<br>
+       Auto-updated every 30&nbsp;minutes &mdash; last run: <strong>2026-04-26 01:12 UTC</strong>
+       &nbsp;&bull;&nbsp; 2 opportunities recorded (last 60 days)</p>
+  </header>
+
+  <section>
+    <h2>&#127919; Tracking</h2>
+    <div class="pills"><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Anthropic <span style="opacity:.65">~$61B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">OpenAI <span style="opacity:.65">~$157B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">SpaceX <span style="opacity:.65">~$350B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Stripe <span style="opacity:.65">~$65B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Databricks <span style="opacity:.65">~$62B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Epic Games <span style="opacity:.65">~$32B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Anduril <span style="opacity:.65">~$28B</span></span></div>
+  </section>
+
+  <section>
+    <h2>&#128200; Public Holding Stocks &mdash; Live Prices</h2>
+    <p style="font-size:13px;color:#6b7280;margin-bottom:14px">
+      These are already-public companies/funds known to hold stakes in the private companies above.
+      A big price or volume spike often means the market just noticed.
+    </p>
+    
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="font-size:12px;text-transform:uppercase;color:#6b7280">
+          <th style="padding:8px 12px;text-align:left;border-bottom:1px solid #e5e7eb">Ticker</th>
+          <th style="padding:8px 12px;text-align:left;border-bottom:1px solid #e5e7eb">Name</th>
+          <th style="padding:8px 12px;text-align:left;border-bottom:1px solid #e5e7eb">Price</th>
+          <th style="padding:8px 12px;text-align:left;border-bottom:1px solid #e5e7eb">Today</th>
+          <th style="padding:8px 12px;text-align:left;border-bottom:1px solid #e5e7eb">Reported Holdings</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td><a href="https://finance.yahoo.com/quote/DXYZ" target="_blank" style="font-weight:700;color:#2563eb">DXYZ</a></td>
+            <td>Destiny Tech100 Inc</td>
+            <td>$29.44</td>
+            <td><span style="color:#dc2626">&#9660; 0.20%</span></td>
+            <td style="color:#6b7280;font-size:13px">OpenAI, SpaceX, Anthropic, Discord, Stripe</td>
+          </tr></tbody>
+      </table>
+  </section>
+
+  <section>
+    <h2>&#128196; SEC Filings</h2>
+    <p style="font-size:13px;color:#6b7280;margin-bottom:14px">
+      New S-1&nbsp;(IPO registrations), 13F&nbsp;(institutional holdings), and SC&nbsp;13G/D filings
+      that mention a target company.
+    </p>
+    <p class="empty">Nothing found yet — check back after the next run.</p>
+  </section>
+
+  <section>
+    <h2>&#128240; News Mentions</h2>
+    <p style="font-size:13px;color:#6b7280;margin-bottom:14px">
+      News articles referencing a target company alongside IPO / fund / stake keywords.
+    </p>
+    
+        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
+            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">SpaceX</span>
+          </div>
+          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">SpaceX&#x27;s IPO Could Be the Biggest in a Decade. Here&#x27;s How to Get Exposure Right Now. - Yahoo Finance</h3>
+          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-26 01:12 UTC</p>
+          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMingFBVV95cUxNN0xWaENoT0FvUDBHdDJieTFRdk1TaGQ5TGRZQXY3MHQyRUh4Zy0wTGNsbW10VE1aWTNFbDl3WDU3eDk3QlZsUjN4Y3J0ZUhBVXlnN0FVYnVhRUF1YW1VNmFubDJDZmFnRDZfLXdRdS14MjZJSUdyeDhjSW1XeElLMEIwZGE5Wk1IbURPZXBZTldPWmxiX1ZGNFlfeVY2Zw?oc=5" target="_blank">SpaceX's IPO </em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
+          <a href="https://news.google.com/rss/articles/CBMingFBVV95cUxNN0xWaENoT0FvUDBHdDJieTFRdk1TaGQ5TGRZQXY3MHQyRUh4Zy0wTGNsbW10VE1aWTNFbDl3WDU3eDk3QlZsUjN4Y3J0ZUhBVXlnN0FVYnVhRUF1YW1VNmFubDJDZmFnRDZfLXdRdS14MjZJSUdyeDhjSW1XeElLMEIwZGE5Wk1IbURPZXBZTldPWmxiX1ZGNFlfeVY2Zw?oc=5" target="_blank"
+             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
+            View source &#8594;
+          </a>
+        </div>
+        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
+            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">SpaceX</span>
+          </div>
+          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">SpaceX has had talks with Saudi fund for potential $5B investment in IPO - report - MSN</h3>
+          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-26 01:12 UTC</p>
+          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMi-wJBVV95cUxPMlU2ekxpWkxSR1dPck5LT2tCMEZtNTltTFFNMjg0V25MQXh5Q3FRc2RObnlvdkNpMHRTN09kMGwwV0U1M2FRc3U2MG5BUlBWbjRZQmNJekhMWTM0ZG1YX0Vzd1k0Z3RZeW9yemc4UGFYX1MxRnllLUZjWl95bmV6WUkyZ0NlTEIzekhaekFuNDA3dFpvckFIUElQeWpqUzlWOS1Pa3RkckI0RWZPelRSS2txLTl5ZEdqWF</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
+          <a href="https://news.google.com/rss/articles/CBMi-wJBVV95cUxPMlU2ekxpWkxSR1dPck5LT2tCMEZtNTltTFFNMjg0V25MQXh5Q3FRc2RObnlvdkNpMHRTN09kMGwwV0U1M2FRc3U2MG5BUlBWbjRZQmNJekhMWTM0ZG1YX0Vzd1k0Z3RZeW9yemc4UGFYX1MxRnllLUZjWl95bmV6WUkyZ0NlTEIzekhaekFuNDA3dFpvckFIUElQeWpqUzlWOS1Pa3RkckI0RWZPelRSS2txLTl5ZEdqWF9vWFV5c2xKYXNMYlk2Z1ZzQXRGYTBfOEZwc3Z2SjJidVMwRFlaVzhZdzF4cHc3eXFfbnhwV0Q5bUJuMWRIQkxYcXVXVFE0LUllTExVelBZbDVaU1RoZlpjQ3Nmd0NkelFDQUxESkQwVDZrM241czNBanZBTGk5d1pZLXBkRXAwa095Z0VxMHR2TVZCQjBWRnZfdEsxZkVkbkViQVJNWXpkaF9nS3hBSDQwMi1lZktIWnRCQjlSNC10cjFhUFM4OFVF?oc=5" target="_blank"
+             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
+            View source &#8594;
+          </a>
+        </div>
+  </section>
+
+  <section>
+    <h2>&#128268; Holdings Stock Alerts</h2>
+    <p style="font-size:13px;color:#6b7280;margin-bottom:14px">
+      Recorded when a known holding stock moved &gt;5&nbsp;% or saw 2.5&times;&nbsp;normal volume.
+    </p>
+    <p class="empty">Nothing found yet — check back after the next run.</p>
+  </section>
+
+  <footer>IPO-Notif &bull; Data from SEC EDGAR, Google News, Yahoo Finance &bull; Not financial advice</footer>
+</div>
 </body>
 </html>
