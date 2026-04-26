@@ -1,12 +1,14 @@
 """
-IPO & Investment Opportunity Notifier
-======================================
+IPO & Investment Opportunity Monitor
+=====================================
 Monitors SEC EDGAR, news, and known holding stocks for early signals
 about public investment vehicles that hold Anthropic, OpenAI, SpaceX, etc.
 
+Results are written to docs/index.html and served via GitHub Pages.
+
 Usage:
     python main.py            # run the scheduler (blocks forever)
-    python main.py --once     # run all checks once and exit (good for cron/testing)
+    python main.py --once     # run one cycle and exit (used by GitHub Actions)
 """
 import argparse
 import logging
@@ -21,106 +23,78 @@ load_dotenv()
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    handlers=[
-        logging.StreamHandler(sys.stdout),
-        logging.FileHandler("ipo_notif.log"),
-    ],
+    handlers=[logging.StreamHandler(sys.stdout)],
 )
 log = logging.getLogger("main")
 
 import database
-import notifier
-from analyzer import build_email_content
+import dashboard
+from analyzer import explain_sec_filing, explain_news_article, explain_holdings_alert
 from monitors.sec_monitor import check_sec_filings
 from monitors.news_monitor import check_news
 from monitors.holdings_monitor import check_holdings
 
 
-def _email_configured() -> bool:
-    """Return True if all email credentials are present in the environment."""
-    required = ["EMAIL_SENDER", "EMAIL_PASSWORD", "EMAIL_RECIPIENT"]
-    missing = [k for k in required if not os.getenv(k)]
-    if missing:
-        log.warning(
-            "Email not configured — skipping send. "
-            "Add these as GitHub Secrets: %s",
-            ", ".join(missing),
-        )
-        return False
-    return True
-
-
 def run_all_checks() -> None:
-    """Collect alerts from all monitors and send a single batched email."""
-    log.info("=== Running all checks at %s ===", datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"))
-    alerts = []
+    log.info("=== Running checks at %s ===", datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"))
 
     # 1. SEC filings
     try:
         for alert in check_sec_filings():
-            alerts.append(alert)
+            database.save_opportunity(
+                source="SEC EDGAR",
+                dedup_key=alert["accession_number"],
+                matched_company=alert["matched_company"],
+                title=f"{alert['form_type']}: {alert['entity_name']}",
+                explanation=explain_sec_filing(alert),
+                link=alert["filing_url"],
+                extra=alert,
+            )
     except Exception as exc:
         log.error("SEC monitor error: %s", exc)
 
     # 2. News
     try:
         for alert in check_news():
-            alerts.append(alert)
+            database.save_opportunity(
+                source="News",
+                dedup_key=alert["url"],
+                matched_company=alert["matched_company"],
+                title=alert.get("title", ""),
+                explanation=explain_news_article(alert),
+                link=alert["url"],
+                extra=alert,
+            )
     except Exception as exc:
         log.error("News monitor error: %s", exc)
 
-    # 3. Known holdings price/volume
+    # 3. Holdings price/volume
     try:
         for alert in check_holdings():
-            alerts.append(alert)
+            database.save_opportunity(
+                source="Holdings Monitor",
+                dedup_key=f"{alert['ticker']}-{datetime.utcnow().strftime('%Y-%m-%d')}",
+                matched_company=alert["ticker"],
+                title=f"{alert['stock_name']} ({alert['ticker']}): {', '.join(alert['triggers'])}",
+                explanation=explain_holdings_alert(alert),
+                link=f"https://finance.yahoo.com/quote/{alert['ticker']}",
+                extra=alert,
+            )
     except Exception as exc:
         log.error("Holdings monitor error: %s", exc)
 
-    if not alerts:
-        log.info("No new alerts this cycle.")
-        return
-
-    log.info("Found %d new alert(s).", len(alerts))
-
-    if not _email_configured():
-        log.info("Alerts found but email is not configured — nothing sent.")
-        return
-
-    subject, html = build_email_content(alerts)
-    if subject and html:
-        notifier.send_email(subject, html)
-
-
-def run_scheduler() -> None:
-    """Run checks on a schedule using APScheduler."""
-    from apscheduler.schedulers.blocking import BlockingScheduler
-
-    sec_interval = int(os.getenv("SEC_CHECK_INTERVAL", "360"))   # default 6 hours
-    news_interval = int(os.getenv("NEWS_CHECK_INTERVAL", "60"))  # default 1 hour
-    hold_interval = int(os.getenv("HOLDINGS_CHECK_INTERVAL", "30"))  # default 30 min
-
-    scheduler = BlockingScheduler(timezone="UTC")
-
-    scheduler.add_job(run_all_checks, "interval", minutes=min(sec_interval, news_interval, hold_interval),
-                      id="full_check", next_run_time=datetime.utcnow())
-
-    log.info(
-        "Scheduler started. Checks run every %d minutes. Press Ctrl+C to stop.",
-        min(sec_interval, news_interval, hold_interval),
-    )
+    # Regenerate the dashboard regardless of whether new alerts were found
+    log.info("Regenerating dashboard...")
     try:
-        scheduler.start()
-    except (KeyboardInterrupt, SystemExit):
-        log.info("Scheduler stopped.")
+        dashboard.generate()
+        log.info("Dashboard written to docs/index.html")
+    except Exception as exc:
+        log.error("Dashboard generation error: %s", exc)
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="IPO & Investment Opportunity Notifier")
-    parser.add_argument(
-        "--once",
-        action="store_true",
-        help="Run all checks once and exit (useful for cron jobs)",
-    )
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--once", action="store_true")
     args = parser.parse_args()
 
     database.init_db()
@@ -128,4 +102,12 @@ if __name__ == "__main__":
     if args.once:
         run_all_checks()
     else:
-        run_scheduler()
+        from apscheduler.schedulers.blocking import BlockingScheduler
+        scheduler = BlockingScheduler(timezone="UTC")
+        scheduler.add_job(run_all_checks, "interval", minutes=30,
+                          id="full_check", next_run_time=datetime.utcnow())
+        log.info("Scheduler started. Press Ctrl+C to stop.")
+        try:
+            scheduler.start()
+        except (KeyboardInterrupt, SystemExit):
+            log.info("Scheduler stopped.")

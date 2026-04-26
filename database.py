@@ -1,8 +1,9 @@
 """
-SQLite-backed store for deduplicating alerts and tracking seen filings/articles.
+SQLite-backed store for deduplicating alerts and persisting opportunity history.
 """
-import sqlite3
+import json
 import os
+import sqlite3
 from datetime import datetime
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "state.db")
@@ -37,12 +38,16 @@ def init_db() -> None:
                 PRIMARY KEY (ticker, alert_date)
             );
 
-            CREATE TABLE IF NOT EXISTS sent_alerts (
-                id         INTEGER PRIMARY KEY AUTOINCREMENT,
-                alert_type TEXT,
-                key        TEXT UNIQUE,
-                subject    TEXT,
-                sent_at    TEXT DEFAULT (datetime('now'))
+            CREATE TABLE IF NOT EXISTS opportunities (
+                id             INTEGER PRIMARY KEY AUTOINCREMENT,
+                source         TEXT NOT NULL,
+                dedup_key      TEXT UNIQUE,
+                matched_company TEXT,
+                title          TEXT,
+                explanation    TEXT,
+                link           TEXT,
+                extra_json     TEXT,
+                discovered_at  TEXT DEFAULT (datetime('now'))
             );
         """)
 
@@ -105,19 +110,31 @@ def mark_price_alert_sent(ticker: str) -> None:
         )
 
 
-# ── Sent alerts (general dedup) ────────────────────────────────────────────────
+# ── Opportunities (full history) ───────────────────────────────────────────────
 
-def is_alert_sent(key: str) -> bool:
-    with _conn() as con:
-        row = con.execute(
-            "SELECT 1 FROM sent_alerts WHERE key = ?", (key,)
-        ).fetchone()
-    return row is not None
-
-
-def mark_alert_sent(alert_type: str, key: str, subject: str) -> None:
+def save_opportunity(source: str, dedup_key: str, matched_company: str,
+                     title: str, explanation: str, link: str, extra: dict) -> None:
     with _conn() as con:
         con.execute(
-            "INSERT OR IGNORE INTO sent_alerts (alert_type, key, subject) VALUES (?,?,?)",
-            (alert_type, key, subject),
+            """
+            INSERT OR IGNORE INTO opportunities
+                (source, dedup_key, matched_company, title, explanation, link, extra_json)
+            VALUES (?,?,?,?,?,?,?)
+            """,
+            (source, dedup_key, matched_company, title, explanation, link, json.dumps(extra)),
         )
+
+
+def get_recent_opportunities(days: int = 60) -> list[dict]:
+    cutoff = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+    # SQLite datetime arithmetic
+    with _conn() as con:
+        rows = con.execute(
+            """
+            SELECT * FROM opportunities
+            WHERE discovered_at >= datetime('now', ?)
+            ORDER BY discovered_at DESC
+            """,
+            (f"-{days} days",),
+        ).fetchall()
+    return [dict(r) for r in rows]
