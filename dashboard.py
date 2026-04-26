@@ -3,7 +3,6 @@ Generates docs/index.html — a static dashboard served via GitHub Pages.
 Runs at the end of every monitor cycle.
 """
 import html
-import json
 import os
 from datetime import datetime
 
@@ -48,6 +47,25 @@ def _badge(source: str) -> str:
     return f'<span style="background:{color};color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">{html.escape(source)}</span>'
 
 
+def _significance_label(sig: str) -> str:
+    labels = {
+        "high":   ("Pure play",  "#15803d", "#dcfce7"),
+        "medium": ("Notable",    "#92400e", "#fef3c7"),
+        "low":    ("Indirect",   "#1e40af", "#eff6ff"),
+    }
+    text, fg, bg = labels.get(sig, ("—", "#6b7280", "#f3f4f6"))
+    return f'<span style="background:{bg};color:{fg};padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600">{text}</span>'
+
+
+def _holdings_breakdown(stock: dict) -> str:
+    pct = stock.get("holdings_pct", {})
+    if not pct:
+        return html.escape(", ".join(stock.get("holdings", [])))
+    parts = [f"<strong>{html.escape(k)}</strong>&nbsp;<span style='color:#6b7280'>{html.escape(v)}</span>"
+             for k, v in pct.items()]
+    return " &nbsp;·&nbsp; ".join(parts)
+
+
 def _watchlist_html() -> str:
     rows = []
     for s in KNOWN_HOLDING_STOCKS:
@@ -56,31 +74,43 @@ def _watchlist_html() -> str:
         if d:
             color = "#16a34a" if d["pct"] >= 0 else "#dc2626"
             arrow = "&#9650;" if d["pct"] >= 0 else "&#9660;"
-            price_cell = f"${d['price']:.2f}"
+            price_cell  = f"${d['price']:,.2f}"
             change_cell = f'<span style="color:{color}">{arrow} {abs(d["pct"]):.2f}%</span>'
         else:
-            price_cell = '<span style="color:#9ca3af">—</span>'
+            price_cell  = '<span style="color:#9ca3af">—</span>'
             change_cell = '<span style="color:#9ca3af">—</span>'
-        holds = ", ".join(s["holdings"])
-        yf_url = f"https://finance.yahoo.com/quote/{ticker}"
+
+        yf_url    = f"https://finance.yahoo.com/quote/{ticker}"
+        sig_label = _significance_label(s.get("stake_significance", "low"))
+        breakdown = _holdings_breakdown(s)
+        desc      = html.escape(s.get("description", ""))
+
         rows.append(f"""
-          <tr>
-            <td><a href="{yf_url}" target="_blank" style="font-weight:700;color:#2563eb">{ticker}</a></td>
-            <td>{html.escape(s['name'])}</td>
-            <td>{price_cell}</td>
-            <td>{change_cell}</td>
-            <td style="color:#6b7280;font-size:13px">{html.escape(holds)}</td>
+          <tr style="border-bottom:1px solid #f3f4f6">
+            <td style="padding:14px 12px;vertical-align:top">
+              <a href="{yf_url}" target="_blank"
+                 style="font-weight:700;color:#2563eb;font-size:15px">{ticker}</a><br>
+              <span style="font-size:12px;color:#6b7280">{html.escape(s['name'])}</span>
+            </td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:15px;font-weight:600">{price_cell}</td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:15px">{change_cell}</td>
+            <td style="padding:14px 12px;vertical-align:top">{sig_label}</td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px;line-height:1.8">
+              {breakdown}<br>
+              <span style="color:#9ca3af;font-size:12px">{desc}</span>
+            </td>
           </tr>""")
+
     if not rows:
         return '<p class="empty">No stocks configured.</p>'
     return f"""
       <table style="width:100%;border-collapse:collapse">
-        <thead><tr style="font-size:12px;text-transform:uppercase;color:#6b7280">
-          <th style="padding:8px 12px;text-align:left;border-bottom:1px solid #e5e7eb">Ticker</th>
-          <th style="padding:8px 12px;text-align:left;border-bottom:1px solid #e5e7eb">Name</th>
-          <th style="padding:8px 12px;text-align:left;border-bottom:1px solid #e5e7eb">Price</th>
-          <th style="padding:8px 12px;text-align:left;border-bottom:1px solid #e5e7eb">Today</th>
-          <th style="padding:8px 12px;text-align:left;border-bottom:1px solid #e5e7eb">Reported Holdings</th>
+        <thead><tr style="font-size:11px;text-transform:uppercase;color:#9ca3af;border-bottom:2px solid #e5e7eb">
+          <th style="padding:8px 12px;text-align:left">Ticker</th>
+          <th style="padding:8px 12px;text-align:left">Price</th>
+          <th style="padding:8px 12px;text-align:left">Today</th>
+          <th style="padding:8px 12px;text-align:left">Type</th>
+          <th style="padding:8px 12px;text-align:left">Holdings Breakdown</th>
         </tr></thead>
         <tbody>{''.join(rows)}</tbody>
       </table>"""
@@ -143,13 +173,13 @@ def generate() -> None:
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta http-equiv="refresh" content="1800">  <!-- auto-reload every 30 min -->
+  <meta http-equiv="refresh" content="1800">
   <title>IPO &amp; Investment Watchlist</title>
   <style>
     * {{ box-sizing: border-box; margin: 0; padding: 0; }}
     body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
             background: #f3f4f6; color: #111827; padding: 24px; }}
-    .wrap {{ max-width: 960px; margin: 0 auto; }}
+    .wrap {{ max-width: 1000px; margin: 0 auto; }}
     header {{ background: linear-gradient(135deg,#1e3a5f,#2563eb); color: #fff;
               padding: 32px 28px; border-radius: 14px; margin-bottom: 24px; }}
     header h1 {{ font-size: 26px; margin-bottom: 8px; }}
@@ -181,9 +211,10 @@ def generate() -> None:
 
   <section>
     <h2>&#128200; Public Holding Stocks &mdash; Live Prices</h2>
-    <p style="font-size:13px;color:#6b7280;margin-bottom:14px">
-      These are already-public companies/funds known to hold stakes in the private companies above.
-      A big price or volume spike often means the market just noticed.
+    <p style="font-size:13px;color:#6b7280;margin-bottom:16px">
+      <strong style="color:#15803d">Pure play</strong> = private stakes are most of the stock's value &nbsp;·&nbsp;
+      <strong style="color:#92400e">Notable</strong> = meaningful exposure &nbsp;·&nbsp;
+      <strong style="color:#1e40af">Indirect</strong> = large company, small relative stake
     </p>
     {watchlist}
   </section>
@@ -191,7 +222,7 @@ def generate() -> None:
   <section>
     <h2>&#128196; SEC Filings</h2>
     <p style="font-size:13px;color:#6b7280;margin-bottom:14px">
-      New S-1&nbsp;(IPO registrations), 13F&nbsp;(institutional holdings), and SC&nbsp;13G/D filings
+      New S-1 (IPO registrations), 13F (institutional holdings), and SC 13G/D filings
       that mention a target company.
     </p>
     {sec_cards}
