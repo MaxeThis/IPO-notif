@@ -132,16 +132,18 @@ def _watchlist_html() -> str:
     if not rows:
         return '<p class="empty">// no stocks configured</p>'
     return f"""
-      <table style="width:100%;border-collapse:collapse;font-family:{MONO}">
-        <thead><tr style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:{AMBER};border-bottom:1px solid {AMBER_SOFT}">
-          <th style="padding:8px 12px;text-align:left;font-weight:700">Ticker</th>
-          <th style="padding:8px 12px;text-align:left;font-weight:700">Last</th>
-          <th style="padding:8px 12px;text-align:left;font-weight:700">Chg %</th>
-          <th style="padding:8px 12px;text-align:left;font-weight:700">Type</th>
-          <th style="padding:8px 12px;text-align:left;font-weight:700">Holdings</th>
-        </tr></thead>
-        <tbody>{''.join(rows)}</tbody>
-      </table>"""
+      <div class="table-scroll">
+        <table class="watchlist" style="width:100%;border-collapse:collapse;font-family:{MONO};min-width:680px">
+          <thead><tr style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:{AMBER};border-bottom:1px solid {AMBER_SOFT}">
+            <th style="padding:8px 12px;text-align:left;font-weight:700">Ticker</th>
+            <th style="padding:8px 12px;text-align:left;font-weight:700">Last</th>
+            <th style="padding:8px 12px;text-align:left;font-weight:700">Chg %</th>
+            <th style="padding:8px 12px;text-align:left;font-weight:700">Type</th>
+            <th style="padding:8px 12px;text-align:left;font-weight:700">Holdings</th>
+          </tr></thead>
+          <tbody>{''.join(rows)}</tbody>
+        </table>
+      </div>"""
 
 
 def _opportunity_cards(opps: list[dict], source_filter: str) -> str:
@@ -332,12 +334,66 @@ def generate() -> None:
     ::-webkit-scrollbar-thumb {{ background: {BORDER_HOT}; }}
     ::-webkit-scrollbar-thumb:hover {{ background: {AMBER_SOFT}; }}
 
-    @media(max-width:640px) {{
-      body {{ padding: 10px; font-size: 12px; }}
-      header {{ padding: 16px; }}
-      header h1 {{ font-size: 18px; letter-spacing: 1.5px; }}
-      section {{ padding: 14px; }}
-      .topbar {{ font-size: 10px; padding: 5px 10px; }}
+    /* Horizontally-scrollable wrappers for wide content (e.g. watchlist) */
+    .table-scroll {{
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin: 0 -22px;
+      padding: 0 22px 4px;
+      scrollbar-width: thin;
+      scrollbar-color: {BORDER_HOT} {BG};
+    }}
+    .table-scroll::-webkit-scrollbar {{ height: 6px; }}
+
+    /* Mobile: tablet & narrow desktop */
+    @media (max-width: 768px) {{
+      body {{ padding: 12px; }}
+      .wrap {{ max-width: 100%; }}
+      header {{ padding: 18px 18px; }}
+      header h1 {{ font-size: 18px; letter-spacing: 1.4px; word-break: break-word; }}
+      header .sub {{ font-size: 12px; }}
+      header .meta {{ gap: 10px 14px; font-size: 10px; }}
+      section {{ padding: 14px 16px; }}
+      section h2 {{ font-size: 11px; letter-spacing: 1.5px; }}
+      .topbar {{ font-size: 10px; padding: 6px 12px; gap: 10px; }}
+      .table-scroll {{ margin: 0 -16px; padding: 0 16px 4px; }}
+    }}
+
+    /* Mobile: phone */
+    @media (max-width: 480px) {{
+      body {{ padding: 8px; font-size: 12px; line-height: 1.6; }}
+      header {{ padding: 14px 14px; }}
+      header h1 {{ font-size: 16px; letter-spacing: 1.2px; }}
+      header h1 .cursor {{ height: 14px; width: 8px; }}
+      header .sub {{ font-size: 11px; line-height: 1.65; }}
+      header .meta {{
+        gap: 6px 12px; padding-top: 10px; margin-top: 10px; font-size: 10px;
+      }}
+      .topbar {{
+        flex-direction: column; align-items: flex-start; gap: 4px;
+        font-size: 10px; padding: 8px 12px; letter-spacing: .8px;
+      }}
+      section {{ padding: 12px 14px; margin-bottom: 10px; }}
+      section h2 {{ font-size: 11px; letter-spacing: 1.2px; gap: 6px; }}
+      section h2::before {{ font-size: 12px; }}
+      section .desc {{ font-size: 11px; }}
+      .pills {{ gap: 5px; }}
+      .pills span {{ font-size: 11px !important; padding: 4px 9px !important; }}
+      .table-scroll {{ margin: 0 -14px; padding: 0 14px 4px; }}
+
+      /* Opportunity cards: timestamp drops below header pills */
+      section > div[style*="border-left:3px solid"] {{
+        padding: 12px 14px !important;
+      }}
+      section > div[style*="border-left:3px solid"] h3 {{
+        font-size: 13px !important; line-height: 1.4;
+      }}
+      section > div[style*="border-left:3px solid"] p {{
+        font-size: 12px !important;
+      }}
+
+      footer {{ font-size: 9px; letter-spacing: 1px; padding: 12px 0; }}
+      footer .sep {{ margin: 0 5px; }}
     }}
   </style>
 </head>
