@@ -9,17 +9,18 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
             background: #f3f4f6; color: #111827; padding: 24px; }
-    .wrap { max-width: 1000px; margin: 0 auto; }
+    .wrap { max-width: 1080px; margin: 0 auto; }
     header { background: linear-gradient(135deg,#1e3a5f,#2563eb); color: #fff;
               padding: 32px 28px; border-radius: 14px; margin-bottom: 24px; }
     header h1 { font-size: 26px; margin-bottom: 8px; }
-    header p  { opacity: .8; font-size: 14px; line-height: 1.6; }
+    header p  { opacity: .85; font-size: 14px; line-height: 1.6; }
     section { background: #fff; border-radius: 12px; padding: 24px;
                margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
     section h2 { font-size: 18px; color: #1e3a5f; padding-bottom: 12px;
                   border-bottom: 2px solid #e5e7eb; margin-bottom: 18px; }
     .pills { display: flex; flex-wrap: wrap; gap: 8px; }
     .empty { color: #9ca3af; font-style: italic; padding: 8px 0; font-size: 14px; }
+    code { background:#f3f4f6;padding:1px 5px;border-radius:4px;font-size:12px }
     footer { text-align: center; font-size: 12px; color: #9ca3af; margin-top: 32px; }
     @media(max-width:600px) { body { padding: 12px; } header { padding: 20px; } }
   </style>
@@ -29,118 +30,217 @@
 
   <header>
     <h1>&#128202; IPO &amp; Investment Watchlist</h1>
-    <p>Tracks publicly traded companies and funds that hold stakes in high-value private unicorns.<br>
-       Auto-updated every 30&nbsp;minutes &mdash; last run: <strong>2026-04-28 15:03 UTC</strong>
+    <p>Tracks publicly traded stocks (and upcoming IPOs) that hold stakes in high-value private unicorns.<br>
+       Auto-updated every 30&nbsp;minutes &mdash; last run: <strong>2026-04-28 16:05 UTC</strong>
        &nbsp;&bull;&nbsp; 26 opportunities recorded (last 60 days)</p>
   </header>
 
   <section>
     <h2>&#127919; Tracking</h2>
-    <div class="pills"><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Anthropic <span style="opacity:.65">~$61B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">OpenAI <span style="opacity:.65">~$157B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">SpaceX <span style="opacity:.65">~$350B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Stripe <span style="opacity:.65">~$65B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Databricks <span style="opacity:.65">~$62B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Epic Games <span style="opacity:.65">~$32B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Anduril <span style="opacity:.65">~$28B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">ElevenLabs <span style="opacity:.65">~$3.3B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Revolut <span style="opacity:.65">~$45B</span></span></div>
+    <div class="pills"><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Anthropic <span style="opacity:.65">~$61B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">OpenAI <span style="opacity:.65">~$157B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">SpaceX <span style="opacity:.65">~$350B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Stripe <span style="opacity:.65">~$65B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Databricks <span style="opacity:.65">~$62B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Epic Games <span style="opacity:.65">~$32B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Anduril <span style="opacity:.65">~$28B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">ElevenLabs <span style="opacity:.65">~$3.3B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Revolut <span style="opacity:.65">~$45B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">ByteDance <span style="opacity:.65">~$220B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Canva <span style="opacity:.65">~$32B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Discord <span style="opacity:.65">~$15B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Ramp <span style="opacity:.65">~$13B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Brex <span style="opacity:.65">~$12B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Plaid <span style="opacity:.65">~$13B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">xAI <span style="opacity:.65">~$50B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Perplexity <span style="opacity:.65">~$9B</span></span></div>
   </section>
 
   <section>
-    <h2>&#128200; Public Holding Stocks &mdash; Live Prices</h2>
+    <h2>&#128200; Trading &mdash; Public Holding Stocks</h2>
     <p style="font-size:13px;color:#6b7280;margin-bottom:16px">
-      <strong style="color:#15803d">Pure play</strong> = private stakes are most of the stock's value &nbsp;·&nbsp;
+      Live price/NAV/P/E/PEG for stocks that hold our target companies.
+      <strong style="color:#15803d">Pure play</strong> = stakes drive most of the stock's value &nbsp;·&nbsp;
       <strong style="color:#92400e">Notable</strong> = meaningful exposure &nbsp;·&nbsp;
-      <strong style="color:#1e40af">Indirect</strong> = large company, small relative stake
+      <strong style="color:#1e40af">Indirect</strong> = large company, small relative stake.
+      P/E &amp; PEG come from Yahoo Finance and may be blank for funds (use NAV instead).
     </p>
     
       <table style="width:100%;border-collapse:collapse">
         <thead><tr style="font-size:11px;text-transform:uppercase;color:#9ca3af;border-bottom:2px solid #e5e7eb">
           <th style="padding:8px 12px;text-align:left">Ticker</th>
-          <th style="padding:8px 12px;text-align:left">Price</th>
-          <th style="padding:8px 12px;text-align:left">Today</th>
+          <th style="padding:8px 12px;text-align:left">Price / Today</th>
+          <th style="padding:8px 12px;text-align:left">NAV</th>
+          <th style="padding:8px 12px;text-align:left">P/E</th>
+          <th style="padding:8px 12px;text-align:left">PEG</th>
           <th style="padding:8px 12px;text-align:left">Type</th>
-          <th style="padding:8px 12px;text-align:left">Holdings Breakdown</th>
+          <th style="padding:8px 12px;text-align:left">Holdings</th>
         </tr></thead>
         <tbody>
           <tr style="border-bottom:1px solid #f3f4f6">
-            <td style="padding:14px 12px;vertical-align:top">
+            <td style="padding:14px 12px;vertical-align:top;min-width:120px">
               <a href="https://finance.yahoo.com/quote/DXYZ" target="_blank"
                  style="font-weight:700;color:#2563eb;font-size:15px">DXYZ</a><br>
               <span style="font-size:12px;color:#6b7280">Destiny Tech100 Inc</span>
             </td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:15px;font-weight:600">$29.14</td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:15px"><span style="color:#dc2626">&#9660; 2.46%</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:14px;font-weight:600"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
             <td style="padding:14px 12px;vertical-align:top"><span style="background:#dcfce7;color:#15803d;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600">Pure play</span></td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:13px;line-height:1.8">
-              <strong>SpaceX</strong>&nbsp;<span style='color:#6b7280'>~20%</span> &nbsp;·&nbsp; <strong>OpenAI</strong>&nbsp;<span style='color:#6b7280'>~17%</span> &nbsp;·&nbsp; <strong>Anthropic</strong>&nbsp;<span style='color:#6b7280'>~7%</span> &nbsp;·&nbsp; <strong>Discord</strong>&nbsp;<span style='color:#6b7280'>~5%</span> &nbsp;·&nbsp; <strong>Stripe</strong>&nbsp;<span style='color:#6b7280'>~4%</span><br>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px;line-height:1.7">
+              <strong>SpaceX</strong>&nbsp;<span style='color:#6b7280'>~20%</span> &nbsp;·&nbsp; <strong>OpenAI</strong>&nbsp;<span style='color:#6b7280'>~17%</span> &nbsp;·&nbsp; <strong>Anthropic</strong>&nbsp;<span style='color:#6b7280'>~7%</span> &nbsp;·&nbsp; <strong>Discord</strong>&nbsp;<span style='color:#6b7280'>~5%</span> &nbsp;·&nbsp; <strong>Stripe</strong>&nbsp;<span style='color:#6b7280'>~4%</span> &nbsp;·&nbsp; <strong>Epic Games</strong>&nbsp;<span style='color:#6b7280'>~3%</span><br>
               <span style="color:#9ca3af;font-size:12px">Closed-end fund whose NAV is almost entirely private-company stakes. One of the only ways retail investors can buy SpaceX, OpenAI, and Anthropic in a brokerage account.</span>
             </td>
           </tr>
           <tr style="border-bottom:1px solid #f3f4f6">
-            <td style="padding:14px 12px;vertical-align:top">
+            <td style="padding:14px 12px;vertical-align:top;min-width:120px">
               <a href="https://finance.yahoo.com/quote/RVI" target="_blank"
                  style="font-weight:700;color:#2563eb;font-size:15px">RVI</a><br>
               <span style="font-size:12px;color:#6b7280">Robinhood Ventures Fund I</span>
             </td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:15px;font-weight:600">$32.79</td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:15px"><span style="color:#dc2626">&#9660; 8.14%</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:14px;font-weight:600"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
             <td style="padding:14px 12px;vertical-align:top"><span style="background:#dcfce7;color:#15803d;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600">Pure play</span></td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:13px;line-height:1.8">
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px;line-height:1.7">
               <strong>OpenAI</strong>&nbsp;<span style='color:#6b7280'>~$75M invested (Apr 2026)</span> &nbsp;·&nbsp; <strong>Stripe</strong>&nbsp;<span style='color:#6b7280'>~$14.6M invested</span> &nbsp;·&nbsp; <strong>Databricks</strong>&nbsp;<span style='color:#6b7280'>undisclosed stake</span> &nbsp;·&nbsp; <strong>ElevenLabs</strong>&nbsp;<span style='color:#6b7280'>undisclosed stake</span> &nbsp;·&nbsp; <strong>Revolut</strong>&nbsp;<span style='color:#6b7280'>undisclosed stake</span> &nbsp;·&nbsp; <strong>Ramp</strong>&nbsp;<span style='color:#6b7280'>undisclosed stake</span><br>
               <span style="color:#9ca3af;font-size:12px">Robinhood&#x27;s closed-end fund IPO&#x27;d March 6 2026 at $25/share ($658M fund). Dropped 16% on debut. Added a $75M OpenAI stake in April 2026. Pure retail access to pre-IPO unicorns.</span>
             </td>
           </tr>
           <tr style="border-bottom:1px solid #f3f4f6">
-            <td style="padding:14px 12px;vertical-align:top">
+            <td style="padding:14px 12px;vertical-align:top;min-width:120px">
+              <a href="https://finance.yahoo.com/quote/ARKVX" target="_blank"
+                 style="font-weight:700;color:#2563eb;font-size:15px">ARKVX</a><br>
+              <span style="font-size:12px;color:#6b7280">ARK Venture Fund</span>
+            </td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:14px;font-weight:600"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top"><span style="background:#dcfce7;color:#15803d;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600">Pure play</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px;line-height:1.7">
+              <strong>SpaceX</strong>&nbsp;<span style='color:#6b7280'>~12%</span> &nbsp;·&nbsp; <strong>OpenAI</strong>&nbsp;<span style='color:#6b7280'>~5%</span> &nbsp;·&nbsp; <strong>Anthropic</strong>&nbsp;<span style='color:#6b7280'>~4%</span> &nbsp;·&nbsp; <strong>Anduril</strong>&nbsp;<span style='color:#6b7280'>~3%</span> &nbsp;·&nbsp; <strong>Epic Games</strong>&nbsp;<span style='color:#6b7280'>~3%</span> &nbsp;·&nbsp; <strong>Discord</strong>&nbsp;<span style='color:#6b7280'>~2%</span> &nbsp;·&nbsp; <strong>Databricks</strong>&nbsp;<span style='color:#6b7280'>~2%</span><br>
+              <span style="color:#9ca3af;font-size:12px">ARK Invest&#x27;s interval fund — bought via brokerages with quarterly liquidity. Concentrated in late-stage private tech: SpaceX is the largest holding. Priced at NAV (no premium/discount).</span>
+            </td>
+          </tr>
+          <tr style="border-bottom:1px solid #f3f4f6">
+            <td style="padding:14px 12px;vertical-align:top;min-width:120px">
+              <a href="https://finance.yahoo.com/quote/SFTBY" target="_blank"
+                 style="font-weight:700;color:#2563eb;font-size:15px">SFTBY</a><br>
+              <span style="font-size:12px;color:#6b7280">SoftBank Group Corp (ADR)</span>
+            </td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:14px;font-weight:600"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top"><span style="background:#fef3c7;color:#92400e;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600">Notable</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px;line-height:1.7">
+              <strong>ByteDance</strong>&nbsp;<span style='color:#6b7280'>~$20B+ via Vision Fund</span> &nbsp;·&nbsp; <strong>Stripe</strong>&nbsp;<span style='color:#6b7280'>Vision Fund stake</span> &nbsp;·&nbsp; <strong>OpenAI</strong>&nbsp;<span style='color:#6b7280'>~$1.5B committed (2024)</span> &nbsp;·&nbsp; <strong>Revolut</strong>&nbsp;<span style='color:#6b7280'>lead investor in Series E</span> &nbsp;·&nbsp; <strong>Plaid</strong>&nbsp;<span style='color:#6b7280'>Vision Fund stake</span><br>
+              <span style="color:#9ca3af;font-size:12px">SoftBank&#x27;s Vision Fund is one of the world&#x27;s largest tech investors. Vision Fund holdings dominate SoftBank&#x27;s NAV — analysts often value SFTBY at a discount to underlying portfolio. Trades at ADR (~half a Japanese share).</span>
+            </td>
+          </tr>
+          <tr style="border-bottom:1px solid #f3f4f6">
+            <td style="padding:14px 12px;vertical-align:top;min-width:120px">
+              <a href="https://finance.yahoo.com/quote/TCEHY" target="_blank"
+                 style="font-weight:700;color:#2563eb;font-size:15px">TCEHY</a><br>
+              <span style="font-size:12px;color:#6b7280">Tencent Holdings Ltd (ADR)</span>
+            </td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:14px;font-weight:600"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top"><span style="background:#fef3c7;color:#92400e;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600">Notable</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px;line-height:1.7">
+              <strong>Epic Games</strong>&nbsp;<span style='color:#6b7280'>~40% stake</span> &nbsp;·&nbsp; <strong>Discord</strong>&nbsp;<span style='color:#6b7280'>minority investor</span> &nbsp;·&nbsp; <strong>ElevenLabs</strong>&nbsp;<span style='color:#6b7280'>Series C investor</span><br>
+              <span style="color:#9ca3af;font-size:12px">Owns ~40% of Epic Games (Fortnite, Unreal Engine) — largest single holder. Active investor across global gaming/AI startups. Tencent stake in Epic alone could be worth ~$13B.</span>
+            </td>
+          </tr>
+          <tr style="border-bottom:1px solid #f3f4f6">
+            <td style="padding:14px 12px;vertical-align:top;min-width:120px">
+              <a href="https://finance.yahoo.com/quote/CRM" target="_blank"
+                 style="font-weight:700;color:#2563eb;font-size:15px">CRM</a><br>
+              <span style="font-size:12px;color:#6b7280">Salesforce Inc</span>
+            </td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:14px;font-weight:600"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top"><span style="background:#eff6ff;color:#1e40af;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600">Indirect</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px;line-height:1.7">
+              <strong>Anthropic</strong>&nbsp;<span style='color:#6b7280'>Salesforce Ventures lead investor</span> &nbsp;·&nbsp; <strong>Stripe</strong>&nbsp;<span style='color:#6b7280'>Salesforce Ventures stake</span> &nbsp;·&nbsp; <strong>Databricks</strong>&nbsp;<span style='color:#6b7280'>strategic partner &amp; investor</span><br>
+              <span style="color:#9ca3af;font-size:12px">Salesforce Ventures has invested heavily in enterprise AI — Anthropic is a flagship portfolio company. Stake is small relative to CRM&#x27;s $300B+ market cap, but CRM moves on AI/Anthropic news.</span>
+            </td>
+          </tr>
+          <tr style="border-bottom:1px solid #f3f4f6">
+            <td style="padding:14px 12px;vertical-align:top;min-width:120px">
               <a href="https://finance.yahoo.com/quote/MSFT" target="_blank"
                  style="font-weight:700;color:#2563eb;font-size:15px">MSFT</a><br>
               <span style="font-size:12px;color:#6b7280">Microsoft Corp</span>
             </td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:15px;font-weight:600">$426.48</td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:15px"><span style="color:#16a34a">&#9650; 0.39%</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:14px;font-weight:600"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
             <td style="padding:14px 12px;vertical-align:top"><span style="background:#eff6ff;color:#1e40af;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600">Indirect</span></td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:13px;line-height:1.8">
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px;line-height:1.7">
               <strong>OpenAI</strong>&nbsp;<span style='color:#6b7280'>~$13B invested</span><br>
               <span style="color:#9ca3af;font-size:12px">Invested ~$13B in OpenAI and provides Azure as its exclusive cloud. OpenAI is a small % of Microsoft&#x27;s $3T market cap, but MSFT moves on OpenAI news.</span>
             </td>
           </tr>
           <tr style="border-bottom:1px solid #f3f4f6">
-            <td style="padding:14px 12px;vertical-align:top">
+            <td style="padding:14px 12px;vertical-align:top;min-width:120px">
               <a href="https://finance.yahoo.com/quote/GOOGL" target="_blank"
                  style="font-weight:700;color:#2563eb;font-size:15px">GOOGL</a><br>
               <span style="font-size:12px;color:#6b7280">Alphabet Inc</span>
             </td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:15px;font-weight:600">$351.21</td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:15px"><span style="color:#16a34a">&#9650; 0.25%</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:14px;font-weight:600"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
             <td style="padding:14px 12px;vertical-align:top"><span style="background:#eff6ff;color:#1e40af;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600">Indirect</span></td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:13px;line-height:1.8">
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px;line-height:1.7">
               <strong>Anthropic</strong>&nbsp;<span style='color:#6b7280'>~$2B invested</span><br>
               <span style="color:#9ca3af;font-size:12px">Invested ~$2B in Anthropic via Google Cloud partnership. Small relative to Alphabet&#x27;s market cap, but stock reacts to Anthropic milestones.</span>
             </td>
           </tr>
           <tr style="border-bottom:1px solid #f3f4f6">
-            <td style="padding:14px 12px;vertical-align:top">
+            <td style="padding:14px 12px;vertical-align:top;min-width:120px">
               <a href="https://finance.yahoo.com/quote/AMZN" target="_blank"
                  style="font-weight:700;color:#2563eb;font-size:15px">AMZN</a><br>
               <span style="font-size:12px;color:#6b7280">Amazon.com Inc</span>
             </td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:15px;font-weight:600">$260.39</td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:15px"><span style="color:#dc2626">&#9660; 0.28%</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:14px;font-weight:600"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
             <td style="padding:14px 12px;vertical-align:top"><span style="background:#eff6ff;color:#1e40af;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600">Indirect</span></td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:13px;line-height:1.8">
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px;line-height:1.7">
               <strong>Anthropic</strong>&nbsp;<span style='color:#6b7280'>~$4B invested</span><br>
               <span style="color:#9ca3af;font-size:12px">Committed up to $4B in Anthropic through AWS. Anthropic models power many AWS AI products.</span>
             </td>
           </tr>
           <tr style="border-bottom:1px solid #f3f4f6">
-            <td style="padding:14px 12px;vertical-align:top">
+            <td style="padding:14px 12px;vertical-align:top;min-width:120px">
               <a href="https://finance.yahoo.com/quote/NVDA" target="_blank"
                  style="font-weight:700;color:#2563eb;font-size:15px">NVDA</a><br>
               <span style="font-size:12px;color:#6b7280">NVIDIA Corp</span>
             </td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:15px;font-weight:600">$210.09</td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:15px"><span style="color:#dc2626">&#9660; 3.01%</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:14px;font-weight:600"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px"><span style="color:#9ca3af">—</span></td>
             <td style="padding:14px 12px;vertical-align:top"><span style="background:#fef3c7;color:#92400e;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600">Notable</span></td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:13px;line-height:1.8">
-              <strong>OpenAI</strong>&nbsp;<span style='color:#6b7280'>early investor</span> &nbsp;·&nbsp; <strong>Anthropic</strong>&nbsp;<span style='color:#6b7280'>early investor</span> &nbsp;·&nbsp; <strong>Databricks</strong>&nbsp;<span style='color:#6b7280'>strategic investor</span><br>
+            <td style="padding:14px 12px;vertical-align:top;font-size:13px;line-height:1.7">
+              <strong>OpenAI</strong>&nbsp;<span style='color:#6b7280'>early investor</span> &nbsp;·&nbsp; <strong>Anthropic</strong>&nbsp;<span style='color:#6b7280'>early investor</span> &nbsp;·&nbsp; <strong>Databricks</strong>&nbsp;<span style='color:#6b7280'>strategic investor</span> &nbsp;·&nbsp; <strong>xAI</strong>&nbsp;<span style='color:#6b7280'>strategic investor</span> &nbsp;·&nbsp; <strong>Perplexity</strong>&nbsp;<span style='color:#6b7280'>Series B investor</span><br>
               <span style="color:#9ca3af;font-size:12px">Early strategic investor in multiple AI unicorns. As the primary GPU supplier, NVDA stock is a broad proxy for AI growth including all target companies.</span>
             </td>
           </tr></tbody>
       </table>
+  </section>
+
+  <section>
+    <h2>&#128640; Upcoming IPOs &mdash; Same Criteria, Not Yet Trading</h2>
+    <p style="font-size:13px;color:#6b7280;margin-bottom:16px">
+      Companies/funds with confirmed IPO filings or announced public offerings that hold our target unicorns.
+      Add entries to <code>UPCOMING_IPOS</code> in <code>config.py</code> as new filings are confirmed.
+    </p>
+    <p class="empty">No upcoming IPOs in the watchlist yet. Add entries to <code>UPCOMING_IPOS</code> in <code>config.py</code> as filings are confirmed, or check the <em>Auto-discovered candidates</em> section below for new filers.</p>
+  </section>
+
+  <section>
+    <h2>&#128270; Auto-discovered Candidates</h2>
+    <p style="font-size:13px;color:#6b7280;margin-bottom:16px">
+      New entities surfaced by the SEC and news monitors that look like investment vehicles
+      holding our target companies. Ranked by number of distinct target companies referenced.
+      Use this as a feeder list for <code>KNOWN_HOLDING_STOCKS</code> / <code>UPCOMING_IPOS</code>.
+    </p>
+    <p class="empty">None yet — candidates will appear here after the SEC and news monitors detect filings from new vehicles that hold target companies.</p>
   </section>
 
   <section>

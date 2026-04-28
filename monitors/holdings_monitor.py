@@ -103,6 +103,10 @@ def check_holdings() -> Generator[dict, None, None]:
     log.info("Checking known holding stocks...")
 
     for stock_cfg in KNOWN_HOLDING_STOCKS:
+        # Skip pre-IPO entries — they don't have a tradeable price feed yet
+        if stock_cfg.get("status", "trading") != "trading":
+            continue
+
         ticker = stock_cfg["ticker"]
 
         # Only alert once per ticker per calendar day
