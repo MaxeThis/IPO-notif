@@ -4,469 +4,654 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta http-equiv="refresh" content="1800">
-  <title>IPO &amp; Investment Watchlist</title>
+  <title>IPO-NOTIF // Terminal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            background: #f3f4f6; color: #111827; padding: 24px; }
-    .wrap { max-width: 1000px; margin: 0 auto; }
-    header { background: linear-gradient(135deg,#1e3a5f,#2563eb); color: #fff;
-              padding: 32px 28px; border-radius: 14px; margin-bottom: 24px; }
-    header h1 { font-size: 26px; margin-bottom: 8px; }
-    header p  { opacity: .8; font-size: 14px; line-height: 1.6; }
-    section { background: #fff; border-radius: 12px; padding: 24px;
-               margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
-    section h2 { font-size: 18px; color: #1e3a5f; padding-bottom: 12px;
-                  border-bottom: 2px solid #e5e7eb; margin-bottom: 18px; }
-    .pills { display: flex; flex-wrap: wrap; gap: 8px; }
-    .empty { color: #9ca3af; font-style: italic; padding: 8px 0; font-size: 14px; }
-    footer { text-align: center; font-size: 12px; color: #9ca3af; margin-top: 32px; }
-    @media(max-width:600px) { body { padding: 12px; } header { padding: 20px; } }
+    html, body { background: #0a0a0a; color: #e6e6e6; }
+    body {
+      font-family: 'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+      font-size: 13px;
+      line-height: 1.55;
+      padding: 20px;
+      background-image:
+        radial-gradient(circle at 0% 0%, rgba(255,165,0,0.04), transparent 40%),
+        radial-gradient(circle at 100% 100%, rgba(94,200,255,0.03), transparent 40%);
+      min-height: 100vh;
+    }
+    .wrap { max-width: 1180px; margin: 0 auto; }
+    a { color: #ffa500; }
+
+    /* Top status bar */
+    .topbar {
+      display: flex; justify-content: space-between; align-items: center;
+      border: 1px solid #2a2a2a;
+      background: #111111;
+      padding: 6px 14px;
+      font-size: 11px;
+      color: #8a8a8a;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .topbar .live { color: #22c55e; }
+    .topbar .live::before {
+      content:"●"; color:#22c55e; margin-right:6px;
+      animation: blink 1.6s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+    /* Header banner */
+    header {
+      border: 1px solid #2a2a2a;
+      background: #111111;
+      padding: 22px 26px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content:""; position:absolute; left:0; top:0; bottom:0; width:3px;
+      background: #ffa500;
+    }
+    header h1 {
+      font-size: 22px; font-weight: 700; color: #ffa500;
+      letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px;
+    }
+    header h1 .cursor {
+      display:inline-block; width:10px; height:18px; background:#ffa500;
+      vertical-align:-2px; margin-left:4px; animation: blink 1.05s steps(2) infinite;
+    }
+    header .sub {
+      color: #8a8a8a; font-size: 12px; line-height: 1.7;
+    }
+    header .sub strong { color: #e6e6e6; font-weight: 600; }
+    header .meta {
+      display:flex; gap:18px; flex-wrap:wrap; margin-top: 12px;
+      padding-top: 12px; border-top: 1px solid #2a2a2a;
+      font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+    }
+    header .meta .k { color: #5a5a5a; margin-right: 6px; }
+    header .meta .v { color: #ffa500; font-weight: 700; }
+
+    section {
+      background: #111111;
+      border: 1px solid #2a2a2a;
+      padding: 18px 22px;
+      margin-bottom: 14px;
+    }
+    section h2 {
+      font-size: 12px;
+      color: #ffa500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #3a3a3a;
+      margin-bottom: 14px;
+      font-weight: 700;
+      display:flex; align-items:center; gap:8px;
+    }
+    section h2::before {
+      content: "▌"; color: #ffa500; font-size: 14px;
+    }
+    section .desc {
+      font-size: 12px; color: #8a8a8a; margin-bottom: 14px; line-height: 1.7;
+    }
+    section .desc strong.g { color: #22c55e; }
+    section .desc strong.y { color: #facc15; }
+    section .desc strong.c { color: #5ec8ff; }
+
+    .pills { display: flex; flex-wrap: wrap; gap: 6px; }
+    .empty {
+      color: #5a5a5a; font-style: normal; padding: 6px 0;
+      font-size: 12px; font-family: 'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 10px;
+      color: #5a5a5a;
+      margin-top: 22px;
+      padding: 14px 0;
+      border-top: 1px solid #2a2a2a;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+    footer .sep { color: #3a3a3a; margin: 0 8px; }
+
+    ::selection { background: #ffa500; color: #0a0a0a; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: #0a0a0a; }
+    ::-webkit-scrollbar-thumb { background: #3a3a3a; }
+    ::-webkit-scrollbar-thumb:hover { background: #cc8400; }
+
+    @media(max-width:640px) {
+      body { padding: 10px; font-size: 12px; }
+      header { padding: 16px; }
+      header h1 { font-size: 18px; letter-spacing: 1.5px; }
+      section { padding: 14px; }
+      .topbar { font-size: 10px; padding: 5px 10px; }
+    }
   </style>
 </head>
 <body>
 <div class="wrap">
 
+  <div class="topbar">
+    <span><span class="live">live</span> ipo-notif // v1.0</span>
+    <span>2026-04-28 11:29 UTC</span>
+  </div>
+
   <header>
-    <h1>&#128202; IPO &amp; Investment Watchlist</h1>
-    <p>Tracks publicly traded companies and funds that hold stakes in high-value private unicorns.<br>
-       Auto-updated every 30&nbsp;minutes &mdash; last run: <strong>2026-04-28 10:30 UTC</strong>
-       &nbsp;&bull;&nbsp; 24 opportunities recorded (last 60 days)</p>
+    <h1>IPO &amp; Investment Watchlist<span class="cursor"></span></h1>
+    <p class="sub">Tracks publicly traded companies and funds that hold stakes in high-value private unicorns.<br>
+       Auto-refresh every <strong>30 min</strong> &mdash; signal pulled from SEC EDGAR, Google News &amp; Yahoo Finance.</p>
+    <div class="meta">
+      <span><span class="k">last_run</span><span class="v">2026-04-28 11:29 UTC</span></span>
+      <span><span class="k">opportunities</span><span class="v">24</span></span>
+      <span><span class="k">window</span><span class="v">60d</span></span>
+      <span><span class="k">status</span><span class="v" style="color:#22c55e">OK</span></span>
+    </div>
   </header>
 
   <section>
-    <h2>&#127919; Tracking</h2>
-    <div class="pills"><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Anthropic <span style="opacity:.65">~$61B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">OpenAI <span style="opacity:.65">~$157B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">SpaceX <span style="opacity:.65">~$350B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Stripe <span style="opacity:.65">~$65B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Databricks <span style="opacity:.65">~$62B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Epic Games <span style="opacity:.65">~$32B</span></span><span style="background:#eff6ff;color:#1e40af;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:500">Anduril <span style="opacity:.65">~$28B</span></span></div>
+    <h2>Tracking</h2>
+    <div class="pills"><span style="border:1px solid #3a3a3a;background:#161616;color:#e6e6e6;padding:5px 11px;font-size:12px;font-weight:600;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;letter-spacing:.3px">Anthropic <span style="color:#ffa500;margin-left:4px">~$61B</span></span><span style="border:1px solid #3a3a3a;background:#161616;color:#e6e6e6;padding:5px 11px;font-size:12px;font-weight:600;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;letter-spacing:.3px">OpenAI <span style="color:#ffa500;margin-left:4px">~$157B</span></span><span style="border:1px solid #3a3a3a;background:#161616;color:#e6e6e6;padding:5px 11px;font-size:12px;font-weight:600;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;letter-spacing:.3px">SpaceX <span style="color:#ffa500;margin-left:4px">~$350B</span></span><span style="border:1px solid #3a3a3a;background:#161616;color:#e6e6e6;padding:5px 11px;font-size:12px;font-weight:600;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;letter-spacing:.3px">Stripe <span style="color:#ffa500;margin-left:4px">~$65B</span></span><span style="border:1px solid #3a3a3a;background:#161616;color:#e6e6e6;padding:5px 11px;font-size:12px;font-weight:600;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;letter-spacing:.3px">Databricks <span style="color:#ffa500;margin-left:4px">~$62B</span></span><span style="border:1px solid #3a3a3a;background:#161616;color:#e6e6e6;padding:5px 11px;font-size:12px;font-weight:600;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;letter-spacing:.3px">Epic Games <span style="color:#ffa500;margin-left:4px">~$32B</span></span><span style="border:1px solid #3a3a3a;background:#161616;color:#e6e6e6;padding:5px 11px;font-size:12px;font-weight:600;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;letter-spacing:.3px">Anduril <span style="color:#ffa500;margin-left:4px">~$28B</span></span><span style="border:1px solid #3a3a3a;background:#161616;color:#e6e6e6;padding:5px 11px;font-size:12px;font-weight:600;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;letter-spacing:.3px">ElevenLabs <span style="color:#ffa500;margin-left:4px">~$3.3B</span></span><span style="border:1px solid #3a3a3a;background:#161616;color:#e6e6e6;padding:5px 11px;font-size:12px;font-weight:600;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;letter-spacing:.3px">Revolut <span style="color:#ffa500;margin-left:4px">~$45B</span></span></div>
   </section>
 
   <section>
-    <h2>&#128200; Public Holding Stocks &mdash; Live Prices</h2>
-    <p style="font-size:13px;color:#6b7280;margin-bottom:16px">
-      <strong style="color:#15803d">Pure play</strong> = private stakes are most of the stock's value &nbsp;·&nbsp;
-      <strong style="color:#92400e">Notable</strong> = meaningful exposure &nbsp;·&nbsp;
-      <strong style="color:#1e40af">Indirect</strong> = large company, small relative stake
+    <h2>Public Holding Stocks &mdash; Live Quotes</h2>
+    <p class="desc">
+      <strong class="g">PURE</strong> = private stakes are most of the stock's value
+      &nbsp;|&nbsp; <strong class="y">NOTABLE</strong> = meaningful exposure
+      &nbsp;|&nbsp; <strong class="c">INDIRECT</strong> = large company, small relative stake
     </p>
     
-      <table style="width:100%;border-collapse:collapse">
-        <thead><tr style="font-size:11px;text-transform:uppercase;color:#9ca3af;border-bottom:2px solid #e5e7eb">
-          <th style="padding:8px 12px;text-align:left">Ticker</th>
-          <th style="padding:8px 12px;text-align:left">Price</th>
-          <th style="padding:8px 12px;text-align:left">Today</th>
-          <th style="padding:8px 12px;text-align:left">Type</th>
-          <th style="padding:8px 12px;text-align:left">Holdings Breakdown</th>
+      <table style="width:100%;border-collapse:collapse;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">
+        <thead><tr style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#ffa500;border-bottom:1px solid #cc8400">
+          <th style="padding:8px 12px;text-align:left;font-weight:700">Ticker</th>
+          <th style="padding:8px 12px;text-align:left;font-weight:700">Last</th>
+          <th style="padding:8px 12px;text-align:left;font-weight:700">Chg %</th>
+          <th style="padding:8px 12px;text-align:left;font-weight:700">Type</th>
+          <th style="padding:8px 12px;text-align:left;font-weight:700">Holdings</th>
         </tr></thead>
         <tbody>
-          <tr style="border-bottom:1px solid #f3f4f6">
-            <td style="padding:14px 12px;vertical-align:top">
+          <tr style="border-bottom:1px solid #2a2a2a">
+            <td style="padding:10px 12px;vertical-align:top;white-space:nowrap">
               <a href="https://finance.yahoo.com/quote/DXYZ" target="_blank"
-                 style="font-weight:700;color:#2563eb;font-size:15px">DXYZ</a><br>
-              <span style="font-size:12px;color:#6b7280">Destiny Tech100 Inc</span>
+                 style="font-weight:700;color:#ffa500;font-size:14px;text-decoration:none;letter-spacing:.5px">DXYZ</a><br>
+              <span style="font-size:11px;color:#8a8a8a">Destiny Tech100 Inc</span>
             </td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:15px;font-weight:600">$29.87</td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:15px"><span style="color:#16a34a">&#9650; 1.46%</span></td>
-            <td style="padding:14px 12px;vertical-align:top"><span style="background:#dcfce7;color:#15803d;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600">Pure play</span></td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:13px;line-height:1.8">
-              <strong>SpaceX</strong>&nbsp;<span style='color:#6b7280'>~20%</span> &nbsp;·&nbsp; <strong>OpenAI</strong>&nbsp;<span style='color:#6b7280'>~17%</span> &nbsp;·&nbsp; <strong>Anthropic</strong>&nbsp;<span style='color:#6b7280'>~7%</span> &nbsp;·&nbsp; <strong>Discord</strong>&nbsp;<span style='color:#6b7280'>~5%</span> &nbsp;·&nbsp; <strong>Stripe</strong>&nbsp;<span style='color:#6b7280'>~4%</span><br>
-              <span style="color:#9ca3af;font-size:12px">Closed-end fund whose NAV is almost entirely private-company stakes. One of the only ways retail investors can buy SpaceX, OpenAI, and Anthropic in a brokerage account.</span>
+            <td style="padding:10px 12px;vertical-align:top;font-size:14px;font-weight:600;white-space:nowrap"><span style="color:#5a5a5a">--</span></td>
+            <td style="padding:10px 12px;vertical-align:top;font-size:14px;white-space:nowrap"><span style="color:#5a5a5a">--</span></td>
+            <td style="padding:10px 12px;vertical-align:top"><span style="border:1px solid #22c55e;color:#22c55e;padding:1px 7px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">PURE</span></td>
+            <td style="padding:10px 12px;vertical-align:top;font-size:12px;line-height:1.7;color:#e6e6e6">
+              <span style='color:#ffa500'>SpaceX</span>&nbsp;<span style='color:#8a8a8a'>~20%</span> <span style='color:#5a5a5a'>|</span> <span style='color:#ffa500'>OpenAI</span>&nbsp;<span style='color:#8a8a8a'>~17%</span> <span style='color:#5a5a5a'>|</span> <span style='color:#ffa500'>Anthropic</span>&nbsp;<span style='color:#8a8a8a'>~7%</span> <span style='color:#5a5a5a'>|</span> <span style='color:#ffa500'>Discord</span>&nbsp;<span style='color:#8a8a8a'>~5%</span> <span style='color:#5a5a5a'>|</span> <span style='color:#ffa500'>Stripe</span>&nbsp;<span style='color:#8a8a8a'>~4%</span><br>
+              <span style="color:#5a5a5a;font-size:11px">Closed-end fund whose NAV is almost entirely private-company stakes. One of the only ways retail investors can buy SpaceX, OpenAI, and Anthropic in a brokerage account.</span>
             </td>
           </tr>
-          <tr style="border-bottom:1px solid #f3f4f6">
-            <td style="padding:14px 12px;vertical-align:top">
+          <tr style="border-bottom:1px solid #2a2a2a">
+            <td style="padding:10px 12px;vertical-align:top;white-space:nowrap">
+              <a href="https://finance.yahoo.com/quote/RVI" target="_blank"
+                 style="font-weight:700;color:#ffa500;font-size:14px;text-decoration:none;letter-spacing:.5px">RVI</a><br>
+              <span style="font-size:11px;color:#8a8a8a">Robinhood Ventures Fund I</span>
+            </td>
+            <td style="padding:10px 12px;vertical-align:top;font-size:14px;font-weight:600;white-space:nowrap"><span style="color:#5a5a5a">--</span></td>
+            <td style="padding:10px 12px;vertical-align:top;font-size:14px;white-space:nowrap"><span style="color:#5a5a5a">--</span></td>
+            <td style="padding:10px 12px;vertical-align:top"><span style="border:1px solid #22c55e;color:#22c55e;padding:1px 7px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">PURE</span></td>
+            <td style="padding:10px 12px;vertical-align:top;font-size:12px;line-height:1.7;color:#e6e6e6">
+              <span style='color:#ffa500'>OpenAI</span>&nbsp;<span style='color:#8a8a8a'>~$75M invested (Apr 2026)</span> <span style='color:#5a5a5a'>|</span> <span style='color:#ffa500'>Stripe</span>&nbsp;<span style='color:#8a8a8a'>~$14.6M invested</span> <span style='color:#5a5a5a'>|</span> <span style='color:#ffa500'>Databricks</span>&nbsp;<span style='color:#8a8a8a'>undisclosed stake</span> <span style='color:#5a5a5a'>|</span> <span style='color:#ffa500'>ElevenLabs</span>&nbsp;<span style='color:#8a8a8a'>undisclosed stake</span> <span style='color:#5a5a5a'>|</span> <span style='color:#ffa500'>Revolut</span>&nbsp;<span style='color:#8a8a8a'>undisclosed stake</span> <span style='color:#5a5a5a'>|</span> <span style='color:#ffa500'>Ramp</span>&nbsp;<span style='color:#8a8a8a'>undisclosed stake</span><br>
+              <span style="color:#5a5a5a;font-size:11px">Robinhood&#x27;s closed-end fund IPO&#x27;d March 6 2026 at $25/share ($658M fund). Dropped 16% on debut. Added a $75M OpenAI stake in April 2026. Pure retail access to pre-IPO unicorns.</span>
+            </td>
+          </tr>
+          <tr style="border-bottom:1px solid #2a2a2a">
+            <td style="padding:10px 12px;vertical-align:top;white-space:nowrap">
               <a href="https://finance.yahoo.com/quote/MSFT" target="_blank"
-                 style="font-weight:700;color:#2563eb;font-size:15px">MSFT</a><br>
-              <span style="font-size:12px;color:#6b7280">Microsoft Corp</span>
+                 style="font-weight:700;color:#ffa500;font-size:14px;text-decoration:none;letter-spacing:.5px">MSFT</a><br>
+              <span style="font-size:11px;color:#8a8a8a">Microsoft Corp</span>
             </td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:15px;font-weight:600">$424.82</td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:15px"><span style="color:#16a34a">&#9650; 0.05%</span></td>
-            <td style="padding:14px 12px;vertical-align:top"><span style="background:#eff6ff;color:#1e40af;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600">Indirect</span></td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:13px;line-height:1.8">
-              <strong>OpenAI</strong>&nbsp;<span style='color:#6b7280'>~$13B invested</span><br>
-              <span style="color:#9ca3af;font-size:12px">Invested ~$13B in OpenAI and provides Azure as its exclusive cloud. OpenAI is a small % of Microsoft&#x27;s $3T market cap, but MSFT moves on OpenAI news.</span>
+            <td style="padding:10px 12px;vertical-align:top;font-size:14px;font-weight:600;white-space:nowrap"><span style="color:#5a5a5a">--</span></td>
+            <td style="padding:10px 12px;vertical-align:top;font-size:14px;white-space:nowrap"><span style="color:#5a5a5a">--</span></td>
+            <td style="padding:10px 12px;vertical-align:top"><span style="border:1px solid #5ec8ff;color:#5ec8ff;padding:1px 7px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">INDIRECT</span></td>
+            <td style="padding:10px 12px;vertical-align:top;font-size:12px;line-height:1.7;color:#e6e6e6">
+              <span style='color:#ffa500'>OpenAI</span>&nbsp;<span style='color:#8a8a8a'>~$13B invested</span><br>
+              <span style="color:#5a5a5a;font-size:11px">Invested ~$13B in OpenAI and provides Azure as its exclusive cloud. OpenAI is a small % of Microsoft&#x27;s $3T market cap, but MSFT moves on OpenAI news.</span>
             </td>
           </tr>
-          <tr style="border-bottom:1px solid #f3f4f6">
-            <td style="padding:14px 12px;vertical-align:top">
+          <tr style="border-bottom:1px solid #2a2a2a">
+            <td style="padding:10px 12px;vertical-align:top;white-space:nowrap">
               <a href="https://finance.yahoo.com/quote/GOOGL" target="_blank"
-                 style="font-weight:700;color:#2563eb;font-size:15px">GOOGL</a><br>
-              <span style="font-size:12px;color:#6b7280">Alphabet Inc</span>
+                 style="font-weight:700;color:#ffa500;font-size:14px;text-decoration:none;letter-spacing:.5px">GOOGL</a><br>
+              <span style="font-size:11px;color:#8a8a8a">Alphabet Inc</span>
             </td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:15px;font-weight:600">$350.34</td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:15px"><span style="color:#16a34a">&#9650; 1.72%</span></td>
-            <td style="padding:14px 12px;vertical-align:top"><span style="background:#eff6ff;color:#1e40af;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600">Indirect</span></td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:13px;line-height:1.8">
-              <strong>Anthropic</strong>&nbsp;<span style='color:#6b7280'>~$2B invested</span><br>
-              <span style="color:#9ca3af;font-size:12px">Invested ~$2B in Anthropic via Google Cloud partnership. Small relative to Alphabet&#x27;s market cap, but stock reacts to Anthropic milestones.</span>
+            <td style="padding:10px 12px;vertical-align:top;font-size:14px;font-weight:600;white-space:nowrap"><span style="color:#5a5a5a">--</span></td>
+            <td style="padding:10px 12px;vertical-align:top;font-size:14px;white-space:nowrap"><span style="color:#5a5a5a">--</span></td>
+            <td style="padding:10px 12px;vertical-align:top"><span style="border:1px solid #5ec8ff;color:#5ec8ff;padding:1px 7px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">INDIRECT</span></td>
+            <td style="padding:10px 12px;vertical-align:top;font-size:12px;line-height:1.7;color:#e6e6e6">
+              <span style='color:#ffa500'>Anthropic</span>&nbsp;<span style='color:#8a8a8a'>~$2B invested</span><br>
+              <span style="color:#5a5a5a;font-size:11px">Invested ~$2B in Anthropic via Google Cloud partnership. Small relative to Alphabet&#x27;s market cap, but stock reacts to Anthropic milestones.</span>
             </td>
           </tr>
-          <tr style="border-bottom:1px solid #f3f4f6">
-            <td style="padding:14px 12px;vertical-align:top">
+          <tr style="border-bottom:1px solid #2a2a2a">
+            <td style="padding:10px 12px;vertical-align:top;white-space:nowrap">
               <a href="https://finance.yahoo.com/quote/AMZN" target="_blank"
-                 style="font-weight:700;color:#2563eb;font-size:15px">AMZN</a><br>
-              <span style="font-size:12px;color:#6b7280">Amazon.com Inc</span>
+                 style="font-weight:700;color:#ffa500;font-size:14px;text-decoration:none;letter-spacing:.5px">AMZN</a><br>
+              <span style="font-size:11px;color:#8a8a8a">Amazon.com Inc</span>
             </td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:15px;font-weight:600">$261.12</td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:15px"><span style="color:#dc2626">&#9660; 1.09%</span></td>
-            <td style="padding:14px 12px;vertical-align:top"><span style="background:#eff6ff;color:#1e40af;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600">Indirect</span></td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:13px;line-height:1.8">
-              <strong>Anthropic</strong>&nbsp;<span style='color:#6b7280'>~$4B invested</span><br>
-              <span style="color:#9ca3af;font-size:12px">Committed up to $4B in Anthropic through AWS. Anthropic models power many AWS AI products.</span>
+            <td style="padding:10px 12px;vertical-align:top;font-size:14px;font-weight:600;white-space:nowrap"><span style="color:#5a5a5a">--</span></td>
+            <td style="padding:10px 12px;vertical-align:top;font-size:14px;white-space:nowrap"><span style="color:#5a5a5a">--</span></td>
+            <td style="padding:10px 12px;vertical-align:top"><span style="border:1px solid #5ec8ff;color:#5ec8ff;padding:1px 7px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">INDIRECT</span></td>
+            <td style="padding:10px 12px;vertical-align:top;font-size:12px;line-height:1.7;color:#e6e6e6">
+              <span style='color:#ffa500'>Anthropic</span>&nbsp;<span style='color:#8a8a8a'>~$4B invested</span><br>
+              <span style="color:#5a5a5a;font-size:11px">Committed up to $4B in Anthropic through AWS. Anthropic models power many AWS AI products.</span>
             </td>
           </tr>
-          <tr style="border-bottom:1px solid #f3f4f6">
-            <td style="padding:14px 12px;vertical-align:top">
+          <tr style="border-bottom:1px solid #2a2a2a">
+            <td style="padding:10px 12px;vertical-align:top;white-space:nowrap">
               <a href="https://finance.yahoo.com/quote/NVDA" target="_blank"
-                 style="font-weight:700;color:#2563eb;font-size:15px">NVDA</a><br>
-              <span style="font-size:12px;color:#6b7280">NVIDIA Corp</span>
+                 style="font-weight:700;color:#ffa500;font-size:14px;text-decoration:none;letter-spacing:.5px">NVDA</a><br>
+              <span style="font-size:11px;color:#8a8a8a">NVIDIA Corp</span>
             </td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:15px;font-weight:600">$216.61</td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:15px"><span style="color:#16a34a">&#9650; 4.00%</span></td>
-            <td style="padding:14px 12px;vertical-align:top"><span style="background:#fef3c7;color:#92400e;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600">Notable</span></td>
-            <td style="padding:14px 12px;vertical-align:top;font-size:13px;line-height:1.8">
-              <strong>OpenAI</strong>&nbsp;<span style='color:#6b7280'>early investor</span> &nbsp;·&nbsp; <strong>Anthropic</strong>&nbsp;<span style='color:#6b7280'>early investor</span> &nbsp;·&nbsp; <strong>Databricks</strong>&nbsp;<span style='color:#6b7280'>strategic investor</span><br>
-              <span style="color:#9ca3af;font-size:12px">Early strategic investor in multiple AI unicorns. As the primary GPU supplier, NVDA stock is a broad proxy for AI growth including all target companies.</span>
+            <td style="padding:10px 12px;vertical-align:top;font-size:14px;font-weight:600;white-space:nowrap"><span style="color:#5a5a5a">--</span></td>
+            <td style="padding:10px 12px;vertical-align:top;font-size:14px;white-space:nowrap"><span style="color:#5a5a5a">--</span></td>
+            <td style="padding:10px 12px;vertical-align:top"><span style="border:1px solid #facc15;color:#facc15;padding:1px 7px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">NOTABLE</span></td>
+            <td style="padding:10px 12px;vertical-align:top;font-size:12px;line-height:1.7;color:#e6e6e6">
+              <span style='color:#ffa500'>OpenAI</span>&nbsp;<span style='color:#8a8a8a'>early investor</span> <span style='color:#5a5a5a'>|</span> <span style='color:#ffa500'>Anthropic</span>&nbsp;<span style='color:#8a8a8a'>early investor</span> <span style='color:#5a5a5a'>|</span> <span style='color:#ffa500'>Databricks</span>&nbsp;<span style='color:#8a8a8a'>strategic investor</span><br>
+              <span style="color:#5a5a5a;font-size:11px">Early strategic investor in multiple AI unicorns. As the primary GPU supplier, NVDA stock is a broad proxy for AI growth including all target companies.</span>
             </td>
           </tr></tbody>
       </table>
   </section>
 
   <section>
-    <h2>&#128196; SEC Filings</h2>
-    <p style="font-size:13px;color:#6b7280;margin-bottom:14px">
-      New S-1 (IPO registrations), 13F (institutional holdings), and SC 13G/D filings
-      that mention a target company.
+    <h2>SEC Filings</h2>
+    <p class="desc">
+      New S-1 (IPO registrations), 13F (institutional holdings), and SC 13G/D filings that mention a target company.
     </p>
-    <p class="empty">Nothing found yet — check back after the next run.</p>
+    <p class="empty">// nothing found yet — check back after the next run</p>
   </section>
 
   <section>
-    <h2>&#128240; News Mentions</h2>
-    <p style="font-size:13px;color:#6b7280;margin-bottom:14px">
+    <h2>News Mentions</h2>
+    <p class="desc">
       News articles referencing a target company alongside IPO / fund / stake keywords.
     </p>
     
-        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
-            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">SpaceX</span>
+        <div style="background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffa500;padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="border:1px solid #5ec8ff;color:#5ec8ff;background:transparent;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">News</span>
+            <span style="border:1px solid #ffa500;color:#ffa500;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">SpaceX</span>
+            <span style="margin-left:auto;font-size:11px;color:#5a5a5a;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">2026-04-28 08:21 UTC</span>
           </div>
-          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">Can You Invest in SpaceX Pre-IPO? - The Motley Fool</h3>
-          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-28 08:21 UTC</p>
-          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMigAFBVV95cUxQVGVwMU1qM2pJallBUHJad3czNlI4YmlaZ2EyV3EtZjlZQWtyc1ItR3d3YlZWYWxiRVpDMUVIamIzTi1tSzRBUTQ0RzE2Q29DOTZNVVpsQmlvNl90OFE0RlJZcmM1SF9aTzBZbTNjODBVTS1MV29BT0VubUxMTHBpSA?oc=5" target="_blank">Can You Invest in SpaceX Pre-IPO?</a>&nbsp;&nbsp;<fon</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
+          <h3 style="margin:0 0 8px;font-size:14px;color:#e6e6e6;font-weight:600;letter-spacing:.2px">Can You Invest in SpaceX Pre-IPO? - The Motley Fool</h3>
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.65;color:#8a8a8a">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMigAFBVV95cUxQVGVwMU1qM2pJallBUHJad3czNlI4YmlaZ2EyV3EtZjlZQWtyc1ItR3d3YlZWYWxiRVpDMUVIamIzTi1tSzRBUTQ0RzE2Q29DOTZNVVpsQmlvNl90OFE0RlJZcmM1SF9aTzBZbTNjODBVTS1MV29BT0VubUxMTHBpSA?oc=5" target="_blank">Can You Invest in SpaceX Pre-IPO?</a>&nbsp;&nbsp;<fon</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
           <a href="https://news.google.com/rss/articles/CBMigAFBVV95cUxQVGVwMU1qM2pJallBUHJad3czNlI4YmlaZ2EyV3EtZjlZQWtyc1ItR3d3YlZWYWxiRVpDMUVIamIzTi1tSzRBUTQ0RzE2Q29DOTZNVVpsQmlvNl90OFE0RlJZcmM1SF9aTzBZbTNjODBVTS1MV29BT0VubUxMTHBpSA?oc=5" target="_blank"
-             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
-            View source &#8594;
+             style="color:#ffa500;font-size:11px;font-weight:700;text-decoration:none;
+                    letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+                    border-bottom:1px solid #cc8400;padding-bottom:1px">
+            &gt; view source
           </a>
         </div>
-        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
-            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">SpaceX</span>
+        <div style="background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffa500;padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="border:1px solid #5ec8ff;color:#5ec8ff;background:transparent;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">News</span>
+            <span style="border:1px solid #ffa500;color:#ffa500;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">SpaceX</span>
+            <span style="margin-left:auto;font-size:11px;color:#5a5a5a;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">2026-04-28 08:21 UTC</span>
           </div>
-          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">Forget Waiting Until June: Here Are 3 Ways to Invest in SpaceX Before Its IPO - Yahoo Finance</h3>
-          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-28 08:21 UTC</p>
-          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMilwFBVV95cUxOSFI0blJFS205MExwMFNaZ0N5Vm1TLWxJeWNDWVhnMVhkTFVUU2wtbDJGUklraXNkeFFFcHJDd2FrdDUySDRLZTZNdTZoN3pMUW1STlhmaFcxRUZXaGd1VmZMYnBqazZNX3VuSTdid2NwVnRnUVpVQUVtVWZ6blBPWW9XTldSOWVKdmxpRFRNRGtacFpsT3BF?oc=5" target="_blank">Forget Waiting Until Ju</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
+          <h3 style="margin:0 0 8px;font-size:14px;color:#e6e6e6;font-weight:600;letter-spacing:.2px">Forget Waiting Until June: Here Are 3 Ways to Invest in SpaceX Before Its IPO - Yahoo Finance</h3>
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.65;color:#8a8a8a">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMilwFBVV95cUxOSFI0blJFS205MExwMFNaZ0N5Vm1TLWxJeWNDWVhnMVhkTFVUU2wtbDJGUklraXNkeFFFcHJDd2FrdDUySDRLZTZNdTZoN3pMUW1STlhmaFcxRUZXaGd1VmZMYnBqazZNX3VuSTdid2NwVnRnUVpVQUVtVWZ6blBPWW9XTldSOWVKdmxpRFRNRGtacFpsT3BF?oc=5" target="_blank">Forget Waiting Until Ju</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
           <a href="https://news.google.com/rss/articles/CBMilwFBVV95cUxOSFI0blJFS205MExwMFNaZ0N5Vm1TLWxJeWNDWVhnMVhkTFVUU2wtbDJGUklraXNkeFFFcHJDd2FrdDUySDRLZTZNdTZoN3pMUW1STlhmaFcxRUZXaGd1VmZMYnBqazZNX3VuSTdid2NwVnRnUVpVQUVtVWZ6blBPWW9XTldSOWVKdmxpRFRNRGtacFpsT3BF?oc=5" target="_blank"
-             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
-            View source &#8594;
+             style="color:#ffa500;font-size:11px;font-weight:700;text-decoration:none;
+                    letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+                    border-bottom:1px solid #cc8400;padding-bottom:1px">
+            &gt; view source
           </a>
         </div>
-        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
-            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">SpaceX</span>
+        <div style="background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffa500;padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="border:1px solid #5ec8ff;color:#5ec8ff;background:transparent;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">News</span>
+            <span style="border:1px solid #ffa500;color:#ffa500;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">SpaceX</span>
+            <span style="margin-left:auto;font-size:11px;color:#5a5a5a;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">2026-04-28 02:35 UTC</span>
           </div>
-          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">Can&#x27;t Buy SpaceX Yet? Here Are 4 Ways to Get in Before the IPO. - The Globe and Mail</h3>
-          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-28 02:35 UTC</p>
-          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMi4gFBVV95cUxOTXd5WmpEUmZJVmU3OGdHRWtFMFBUb3lRSFZValMzdXNIaExHRGx6VE9FalNJZW5xWHpXUVo5N0oxMGMybUJLYTZZUFRNMWtFbDlVaWhrME1UamRJb0x5TlpKbjFwMVJtMzFnR2NqM1YxM2k0M3NXaUlfWlRnRVBMRnk4NW43NUFWUVVVcDdjeUdWWVN5eXh3SkF5cGRhZHBBRzU2YWt0MVh4NHd2X0c0X3FPOTViTGJTOE</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
+          <h3 style="margin:0 0 8px;font-size:14px;color:#e6e6e6;font-weight:600;letter-spacing:.2px">Can&#x27;t Buy SpaceX Yet? Here Are 4 Ways to Get in Before the IPO. - The Globe and Mail</h3>
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.65;color:#8a8a8a">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMi4gFBVV95cUxOTXd5WmpEUmZJVmU3OGdHRWtFMFBUb3lRSFZValMzdXNIaExHRGx6VE9FalNJZW5xWHpXUVo5N0oxMGMybUJLYTZZUFRNMWtFbDlVaWhrME1UamRJb0x5TlpKbjFwMVJtMzFnR2NqM1YxM2k0M3NXaUlfWlRnRVBMRnk4NW43NUFWUVVVcDdjeUdWWVN5eXh3SkF5cGRhZHBBRzU2YWt0MVh4NHd2X0c0X3FPOTViTGJTOE</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
           <a href="https://news.google.com/rss/articles/CBMi4gFBVV95cUxOTXd5WmpEUmZJVmU3OGdHRWtFMFBUb3lRSFZValMzdXNIaExHRGx6VE9FalNJZW5xWHpXUVo5N0oxMGMybUJLYTZZUFRNMWtFbDlVaWhrME1UamRJb0x5TlpKbjFwMVJtMzFnR2NqM1YxM2k0M3NXaUlfWlRnRVBMRnk4NW43NUFWUVVVcDdjeUdWWVN5eXh3SkF5cGRhZHBBRzU2YWt0MVh4NHd2X0c0X3FPOTViTGJTOEhhclVObHBwUEduemJySzlBOUEtT0p2REkzMFhEOGdNenZtOV82S0V3?oc=5" target="_blank"
-             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
-            View source &#8594;
+             style="color:#ffa500;font-size:11px;font-weight:700;text-decoration:none;
+                    letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+                    border-bottom:1px solid #cc8400;padding-bottom:1px">
+            &gt; view source
           </a>
         </div>
-        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
-            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">SpaceX</span>
+        <div style="background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffa500;padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="border:1px solid #5ec8ff;color:#5ec8ff;background:transparent;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">News</span>
+            <span style="border:1px solid #ffa500;color:#ffa500;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">SpaceX</span>
+            <span style="margin-left:auto;font-size:11px;color:#5a5a5a;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">2026-04-28 02:35 UTC</span>
           </div>
-          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">Forget Waiting Until June: Here Are 3 Ways to Invest in SpaceX Before Its IPO - AOL.com</h3>
-          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-28 02:35 UTC</p>
-          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMiekFVX3lxTE5uQ2hQUFZPbEpidEdZVm83WWV3Z3Z6d0VaVnB1ODl0Nmw0RmY5bmhDQXRiQThabmtpMUsxNVlCWnktZ2JUYS1DUjM2dE4yRzBTZEJSVXBxZ3lzcWowV3czVW0yNTZpYUJpSmNsVEpDTWNKN2UzX1dibEdB?oc=5" target="_blank">Forget Waiting Until June: Here Are 3 Ways to Invest in SpaceX </em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
+          <h3 style="margin:0 0 8px;font-size:14px;color:#e6e6e6;font-weight:600;letter-spacing:.2px">Forget Waiting Until June: Here Are 3 Ways to Invest in SpaceX Before Its IPO - AOL.com</h3>
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.65;color:#8a8a8a">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMiekFVX3lxTE5uQ2hQUFZPbEpidEdZVm83WWV3Z3Z6d0VaVnB1ODl0Nmw0RmY5bmhDQXRiQThabmtpMUsxNVlCWnktZ2JUYS1DUjM2dE4yRzBTZEJSVXBxZ3lzcWowV3czVW0yNTZpYUJpSmNsVEpDTWNKN2UzX1dibEdB?oc=5" target="_blank">Forget Waiting Until June: Here Are 3 Ways to Invest in SpaceX </em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
           <a href="https://news.google.com/rss/articles/CBMiekFVX3lxTE5uQ2hQUFZPbEpidEdZVm83WWV3Z3Z6d0VaVnB1ODl0Nmw0RmY5bmhDQXRiQThabmtpMUsxNVlCWnktZ2JUYS1DUjM2dE4yRzBTZEJSVXBxZ3lzcWowV3czVW0yNTZpYUJpSmNsVEpDTWNKN2UzX1dibEdB?oc=5" target="_blank"
-             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
-            View source &#8594;
+             style="color:#ffa500;font-size:11px;font-weight:700;text-decoration:none;
+                    letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+                    border-bottom:1px solid #cc8400;padding-bottom:1px">
+            &gt; view source
           </a>
         </div>
-        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
-            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">Anthropic</span>
+        <div style="background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffa500;padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="border:1px solid #5ec8ff;color:#5ec8ff;background:transparent;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">News</span>
+            <span style="border:1px solid #ffa500;color:#ffa500;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">Anthropic</span>
+            <span style="margin-left:auto;font-size:11px;color:#5a5a5a;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">2026-04-27 23:50 UTC</span>
           </div>
-          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">You Can Buy Stock in SpaceX, OpenAI, and Anthropic For $500. Here&#x27;s How. - The Motley Fool</h3>
-          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-27 23:50 UTC</p>
-          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>Anthropic</strong> (currently valued at <strong>~$61B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMilgFBVV95cUxPQ0w3LTdaT00xVGo1ekdWTGhlaHRMUkhsdGlJSGtsT2xubjk4M25vdHh5TE1zNmdBb09LSDdxOXUtYWlGaDZvc0p4N0tTdjVESE51Um1NdmRzMXpZZkNlQkdlRlRGRkRsaFNWTEZaSUY2VnotemdkT2xrNkl0MTZnY1lULVVmYXZVcF9DVEZXc1JVeU5Vc0E?oc=5" target="_blank">You Can Buy Stock in Spa</em><br><br>This may indicate a new public vehicle giving retail investors access to Anthropic equity — which is otherwise unavailable on public markets.</p>
+          <h3 style="margin:0 0 8px;font-size:14px;color:#e6e6e6;font-weight:600;letter-spacing:.2px">You Can Buy Stock in SpaceX, OpenAI, and Anthropic For $500. Here&#x27;s How. - The Motley Fool</h3>
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.65;color:#8a8a8a">A news article was detected mentioning <strong>Anthropic</strong> (currently valued at <strong>~$61B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMilgFBVV95cUxPQ0w3LTdaT00xVGo1ekdWTGhlaHRMUkhsdGlJSGtsT2xubjk4M25vdHh5TE1zNmdBb09LSDdxOXUtYWlGaDZvc0p4N0tTdjVESE51Um1NdmRzMXpZZkNlQkdlRlRGRkRsaFNWTEZaSUY2VnotemdkT2xrNkl0MTZnY1lULVVmYXZVcF9DVEZXc1JVeU5Vc0E?oc=5" target="_blank">You Can Buy Stock in Spa</em><br><br>This may indicate a new public vehicle giving retail investors access to Anthropic equity — which is otherwise unavailable on public markets.</p>
           <a href="https://news.google.com/rss/articles/CBMilgFBVV95cUxPQ0w3LTdaT00xVGo1ekdWTGhlaHRMUkhsdGlJSGtsT2xubjk4M25vdHh5TE1zNmdBb09LSDdxOXUtYWlGaDZvc0p4N0tTdjVESE51Um1NdmRzMXpZZkNlQkdlRlRGRkRsaFNWTEZaSUY2VnotemdkT2xrNkl0MTZnY1lULVVmYXZVcF9DVEZXc1JVeU5Vc0E?oc=5" target="_blank"
-             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
-            View source &#8594;
+             style="color:#ffa500;font-size:11px;font-weight:700;text-decoration:none;
+                    letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+                    border-bottom:1px solid #cc8400;padding-bottom:1px">
+            &gt; view source
           </a>
         </div>
-        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
-            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">SpaceX</span>
+        <div style="background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffa500;padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="border:1px solid #5ec8ff;color:#5ec8ff;background:transparent;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">News</span>
+            <span style="border:1px solid #ffa500;color:#ffa500;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">SpaceX</span>
+            <span style="margin-left:auto;font-size:11px;color:#5a5a5a;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">2026-04-27 18:48 UTC</span>
           </div>
-          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">SpaceX: How to buy before the IPO - MSN</h3>
-          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-27 18:48 UTC</p>
-          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMikANBVV95cUxPeHpVRWJqdlZhdDVlN01tN2dFNlA4Q0FPTGpEeUtFMjJUUnpxM0VGSDJrakFvWEJlS2FsYXlNd3dxSlFyYXY5TENjWmRyWVBac2kzcVJFWnc0cUJZRXhXc1dKcF9xaVNFZDR0MjNDQUNldUtYOFlUUWtvRzVQYmlJUkZncHluU25xQTAtUENZUExueGFFV0QxdkxsMHp0VVlYTVU1TnpXZEMwdVNuajk0SGpHS1V6TXRTNW</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
+          <h3 style="margin:0 0 8px;font-size:14px;color:#e6e6e6;font-weight:600;letter-spacing:.2px">SpaceX: How to buy before the IPO - MSN</h3>
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.65;color:#8a8a8a">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMikANBVV95cUxPeHpVRWJqdlZhdDVlN01tN2dFNlA4Q0FPTGpEeUtFMjJUUnpxM0VGSDJrakFvWEJlS2FsYXlNd3dxSlFyYXY5TENjWmRyWVBac2kzcVJFWnc0cUJZRXhXc1dKcF9xaVNFZDR0MjNDQUNldUtYOFlUUWtvRzVQYmlJUkZncHluU25xQTAtUENZUExueGFFV0QxdkxsMHp0VVlYTVU1TnpXZEMwdVNuajk0SGpHS1V6TXRTNW</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
           <a href="https://news.google.com/rss/articles/CBMikANBVV95cUxPeHpVRWJqdlZhdDVlN01tN2dFNlA4Q0FPTGpEeUtFMjJUUnpxM0VGSDJrakFvWEJlS2FsYXlNd3dxSlFyYXY5TENjWmRyWVBac2kzcVJFWnc0cUJZRXhXc1dKcF9xaVNFZDR0MjNDQUNldUtYOFlUUWtvRzVQYmlJUkZncHluU25xQTAtUENZUExueGFFV0QxdkxsMHp0VVlYTVU1TnpXZEMwdVNuajk0SGpHS1V6TXRTNW96bkwtNTYxWGFGSGRYenJZOE5HTFlJbHI4Z080UkNOWXlHVkR6VURjN0dyQTlnNU94dDZJejhQREV6SmpvZDltVXpEWHBsM1FTOC1sblpYVnFleER5aXhuX055cG1ITVMxOExLVExCNzItZjBtY2VrOFR5WURGM0c2NkF0RGVqRVlPb18zbm9taFJFVUFSZ0cxblByT3RDYUxkWll4bTZqd0hXbWpuajZNVXlFZ2kyT1dNYVRIMU56aXlVbjF2Sk52TzlDN2ZkeWh4YVJVQUR5OW40Uk5j?oc=5" target="_blank"
-             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
-            View source &#8594;
+             style="color:#ffa500;font-size:11px;font-weight:700;text-decoration:none;
+                    letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+                    border-bottom:1px solid #cc8400;padding-bottom:1px">
+            &gt; view source
           </a>
         </div>
-        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
-            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">SpaceX</span>
+        <div style="background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffa500;padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="border:1px solid #5ec8ff;color:#5ec8ff;background:transparent;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">News</span>
+            <span style="border:1px solid #ffa500;color:#ffa500;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">SpaceX</span>
+            <span style="margin-left:auto;font-size:11px;color:#5a5a5a;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">2026-04-27 17:18 UTC</span>
           </div>
-          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">Can&#x27;t Buy SpaceX Yet? Here Are 4 Ways to Get in Before the IPO. - The Motley Fool</h3>
-          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-27 17:18 UTC</p>
-          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMimAFBVV95cUxOVmdWbXNxZjdCcDRIeTREZHNJTkJLM2FlUDhCUFo5b0pIdEp4S05EVFphSi1LbjFxWmZFQy1lekV6TkVkaWtvLWpjaUdsWEdSLTZKMGo2ZzVjbDBESF9fSEJsUjczQ19FaEg3WlNyNEJCd1o3WkRLZ2NZQ3ZWZkZuSjkxNmJXcmN4Mm94NzNGQnk2TVZpTXEwUw?oc=5" target="_blank">Can't Buy SpaceX Yet?</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
+          <h3 style="margin:0 0 8px;font-size:14px;color:#e6e6e6;font-weight:600;letter-spacing:.2px">Can&#x27;t Buy SpaceX Yet? Here Are 4 Ways to Get in Before the IPO. - The Motley Fool</h3>
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.65;color:#8a8a8a">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMimAFBVV95cUxOVmdWbXNxZjdCcDRIeTREZHNJTkJLM2FlUDhCUFo5b0pIdEp4S05EVFphSi1LbjFxWmZFQy1lekV6TkVkaWtvLWpjaUdsWEdSLTZKMGo2ZzVjbDBESF9fSEJsUjczQ19FaEg3WlNyNEJCd1o3WkRLZ2NZQ3ZWZkZuSjkxNmJXcmN4Mm94NzNGQnk2TVZpTXEwUw?oc=5" target="_blank">Can't Buy SpaceX Yet?</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
           <a href="https://news.google.com/rss/articles/CBMimAFBVV95cUxOVmdWbXNxZjdCcDRIeTREZHNJTkJLM2FlUDhCUFo5b0pIdEp4S05EVFphSi1LbjFxWmZFQy1lekV6TkVkaWtvLWpjaUdsWEdSLTZKMGo2ZzVjbDBESF9fSEJsUjczQ19FaEg3WlNyNEJCd1o3WkRLZ2NZQ3ZWZkZuSjkxNmJXcmN4Mm94NzNGQnk2TVZpTXEwUw?oc=5" target="_blank"
-             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
-            View source &#8594;
+             style="color:#ffa500;font-size:11px;font-weight:700;text-decoration:none;
+                    letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+                    border-bottom:1px solid #cc8400;padding-bottom:1px">
+            &gt; view source
           </a>
         </div>
-        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
-            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">Anthropic</span>
+        <div style="background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffa500;padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="border:1px solid #5ec8ff;color:#5ec8ff;background:transparent;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">News</span>
+            <span style="border:1px solid #ffa500;color:#ffa500;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">Anthropic</span>
+            <span style="margin-left:auto;font-size:11px;color:#5a5a5a;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">2026-04-27 15:43 UTC</span>
           </div>
-          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">Want to own stock in SpaceX, OpenAI, and Anthropic pre-IPO? Here&#x27;s how. - MSN</h3>
-          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-27 15:43 UTC</p>
-          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>Anthropic</strong> (currently valued at <strong>~$61B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMiowNBVV95cUxNVHRLYmFuYWxzalBRSHM1M0dWQnd6VS0zdVp0bjAzS3VjSHFEYnZfM2Q0NXQtS0x5TWxqTnBiZ0VVc3cyQ1N1UElOX0lWajJQc3ZVdlotS2c1NXdVNkFHMXgxOS1tUUMyYlFVUG5NWjBJdGxvSlplLWxfSGtTTWtCV3U1aHNMOFJDQ0hyeVdIQU5JUW9FZ0JrWjhSSjkyNEhQWXhFdlRLVnI3bzZCbE1IazhJejVUVUpZLT</em><br><br>This may indicate a new public vehicle giving retail investors access to Anthropic equity — which is otherwise unavailable on public markets.</p>
+          <h3 style="margin:0 0 8px;font-size:14px;color:#e6e6e6;font-weight:600;letter-spacing:.2px">Want to own stock in SpaceX, OpenAI, and Anthropic pre-IPO? Here&#x27;s how. - MSN</h3>
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.65;color:#8a8a8a">A news article was detected mentioning <strong>Anthropic</strong> (currently valued at <strong>~$61B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMiowNBVV95cUxNVHRLYmFuYWxzalBRSHM1M0dWQnd6VS0zdVp0bjAzS3VjSHFEYnZfM2Q0NXQtS0x5TWxqTnBiZ0VVc3cyQ1N1UElOX0lWajJQc3ZVdlotS2c1NXdVNkFHMXgxOS1tUUMyYlFVUG5NWjBJdGxvSlplLWxfSGtTTWtCV3U1aHNMOFJDQ0hyeVdIQU5JUW9FZ0JrWjhSSjkyNEhQWXhFdlRLVnI3bzZCbE1IazhJejVUVUpZLT</em><br><br>This may indicate a new public vehicle giving retail investors access to Anthropic equity — which is otherwise unavailable on public markets.</p>
           <a href="https://news.google.com/rss/articles/CBMiowNBVV95cUxNVHRLYmFuYWxzalBRSHM1M0dWQnd6VS0zdVp0bjAzS3VjSHFEYnZfM2Q0NXQtS0x5TWxqTnBiZ0VVc3cyQ1N1UElOX0lWajJQc3ZVdlotS2c1NXdVNkFHMXgxOS1tUUMyYlFVUG5NWjBJdGxvSlplLWxfSGtTTWtCV3U1aHNMOFJDQ0hyeVdIQU5JUW9FZ0JrWjhSSjkyNEhQWXhFdlRLVnI3bzZCbE1IazhJejVUVUpZLTRZcFhtT09FeExvYy1XLUVLclEwR2dDTG9SMWh4RDU3QUx5WUtjNWh4eHlBOXJZd25Dcml3VXJwbHRFUVRwU3Q1dlUzRldWQmZGVmpVQ0Q2cHMwLTBaMmo4SGI1dVlIUnRnV1RmbFpiMy1oM0VQeDg3NUFPQUdzT0h0dlRBeklJb1JvcHN1TVZBSlIyZXNmOUFfX21DV2c1ZDg5Xy04eDhqQjlJQ21mRzBSenI2cF9td3oyamYxNUFiNGxFX1p4YnpiNWtiZjZ3RWJQNXd2aTJoRHQtNnF0aFNHelYyTXhrUlVlMjRnZW8yVQ?oc=5" target="_blank"
-             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
-            View source &#8594;
+             style="color:#ffa500;font-size:11px;font-weight:700;text-decoration:none;
+                    letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+                    border-bottom:1px solid #cc8400;padding-bottom:1px">
+            &gt; view source
           </a>
         </div>
-        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
-            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">SpaceX</span>
+        <div style="background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffa500;padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="border:1px solid #5ec8ff;color:#5ec8ff;background:transparent;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">News</span>
+            <span style="border:1px solid #ffa500;color:#ffa500;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">SpaceX</span>
+            <span style="margin-left:auto;font-size:11px;color:#5a5a5a;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">2026-04-27 11:42 UTC</span>
           </div>
-          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">Gary Black says Nasdaq rule changes will put &#x27;intense pressure&#x27; on fund managers to participate in SpaceX IPO: &#x27;Sitting out may be too risky&#x27; - MSN</h3>
-          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-27 11:42 UTC</p>
-          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMi-gNBVV95cUxOaEVtVnlIRGxBdDZEaUd6dElVRDVQT1ZzRjJQVElOaUpvZVhaLXFiMG1FdVlRNW5OWnR2QnkzT0dSbVNSc1VTcEJtRmJhR2w5eE1HUk1OMEw0cEo0SDJRajFMUHY5UjJscEZtLUcwVkppRzlDTmVIY18zVWJqeWd0RkdTVFFIT0NLdnRqbnptLTR4T282blduQ3pjUmVkNk1wZ1A5WnlNX0s4bW91bS1IdEs2SjFNOE81Y1</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
+          <h3 style="margin:0 0 8px;font-size:14px;color:#e6e6e6;font-weight:600;letter-spacing:.2px">Gary Black says Nasdaq rule changes will put &#x27;intense pressure&#x27; on fund managers to participate in SpaceX IPO: &#x27;Sitting out may be too risky&#x27; - MSN</h3>
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.65;color:#8a8a8a">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMi-gNBVV95cUxOaEVtVnlIRGxBdDZEaUd6dElVRDVQT1ZzRjJQVElOaUpvZVhaLXFiMG1FdVlRNW5OWnR2QnkzT0dSbVNSc1VTcEJtRmJhR2w5eE1HUk1OMEw0cEo0SDJRajFMUHY5UjJscEZtLUcwVkppRzlDTmVIY18zVWJqeWd0RkdTVFFIT0NLdnRqbnptLTR4T282blduQ3pjUmVkNk1wZ1A5WnlNX0s4bW91bS1IdEs2SjFNOE81Y1</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
           <a href="https://news.google.com/rss/articles/CBMi-gNBVV95cUxOaEVtVnlIRGxBdDZEaUd6dElVRDVQT1ZzRjJQVElOaUpvZVhaLXFiMG1FdVlRNW5OWnR2QnkzT0dSbVNSc1VTcEJtRmJhR2w5eE1HUk1OMEw0cEo0SDJRajFMUHY5UjJscEZtLUcwVkppRzlDTmVIY18zVWJqeWd0RkdTVFFIT0NLdnRqbnptLTR4T282blduQ3pjUmVkNk1wZ1A5WnlNX0s4bW91bS1IdEs2SjFNOE81Y1Y1UE1kMVpwazE5WDdHYnVaSzdENGVCdEVtaDR1YmZ2aEdSUmdmdGpzZWpRQkYwem4wWXN0UUcwUXcyZkxvM1psbWFlelVjS0N6N3hseVlodHhRZkllYXA2dlgtXzQtdlVGY2xYRkwxMGVDOFgxcEZtUS1ySzN1SzNmLS02ZUdfS3A3Sm11TUo1cEZnZEJXeUJ2YXdmbUNPTzFvQ2hVQmh0aWR1ZWt4U1V0N0JSc0tIZnRiWkM5emcyMFROT0FOZ0lpc3BZd2dMcThONFJCZW9SaWhJdjMyR0syMWg2N0wwZmp6c0htclpZYWxkbUxBSXN6eVJWT1hwNGFtaFAwTUxRM2VIanF4VjVqMHdBelE4bWROQzNsaVQwWVVOVHVOSjhqZ0t3cnRwSFhxb3Y5c3d5SnV4Z0xrVjM2MjdpU3lNdw?oc=5" target="_blank"
-             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
-            View source &#8594;
+             style="color:#ffa500;font-size:11px;font-weight:700;text-decoration:none;
+                    letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+                    border-bottom:1px solid #cc8400;padding-bottom:1px">
+            &gt; view source
           </a>
         </div>
-        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
-            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">SpaceX</span>
+        <div style="background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffa500;padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="border:1px solid #5ec8ff;color:#5ec8ff;background:transparent;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">News</span>
+            <span style="border:1px solid #ffa500;color:#ffa500;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">SpaceX</span>
+            <span style="margin-left:auto;font-size:11px;color:#5a5a5a;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">2026-04-27 09:36 UTC</span>
           </div>
-          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">Can&#x27;t Buy SpaceX Yet? Here Are 4 Ways to Get in Before the IPO. - The Globe and Mail</h3>
-          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-27 09:36 UTC</p>
-          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMi4AFBVV95cUxPNFJaWWE2VlBMZ1Z6MTZQMkw2X2dOekt1NExtSnhWcnZZdUxaWjgtbUE4ZG5jbU8tZXRoTGpfOTdDYkJUVnd6dmpwZE1ERTFCbFJsaG9KN19yUld2Yks1Zzg0VnlhalhGUWdjeGsxNUNNVW1XdVM2ZC1NQWduV3VMQ005cDFwX2N6TFN5RWJSMWFBd1pNZlR0WkIyZWQ5Y2JjUVZyZENSaTRXazAxcjgteUtjd3JTX2tfVU</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
+          <h3 style="margin:0 0 8px;font-size:14px;color:#e6e6e6;font-weight:600;letter-spacing:.2px">Can&#x27;t Buy SpaceX Yet? Here Are 4 Ways to Get in Before the IPO. - The Globe and Mail</h3>
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.65;color:#8a8a8a">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMi4AFBVV95cUxPNFJaWWE2VlBMZ1Z6MTZQMkw2X2dOekt1NExtSnhWcnZZdUxaWjgtbUE4ZG5jbU8tZXRoTGpfOTdDYkJUVnd6dmpwZE1ERTFCbFJsaG9KN19yUld2Yks1Zzg0VnlhalhGUWdjeGsxNUNNVW1XdVM2ZC1NQWduV3VMQ005cDFwX2N6TFN5RWJSMWFBd1pNZlR0WkIyZWQ5Y2JjUVZyZENSaTRXazAxcjgteUtjd3JTX2tfVU</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
           <a href="https://news.google.com/rss/articles/CBMi4AFBVV95cUxPNFJaWWE2VlBMZ1Z6MTZQMkw2X2dOekt1NExtSnhWcnZZdUxaWjgtbUE4ZG5jbU8tZXRoTGpfOTdDYkJUVnd6dmpwZE1ERTFCbFJsaG9KN19yUld2Yks1Zzg0VnlhalhGUWdjeGsxNUNNVW1XdVM2ZC1NQWduV3VMQ005cDFwX2N6TFN5RWJSMWFBd1pNZlR0WkIyZWQ5Y2JjUVZyZENSaTRXazAxcjgteUtjd3JTX2tfVU8yT0l3dmlBWHRFVWdUWl9YTUFDa21XanB2WFczelRZeDR1bXZQUg?oc=5" target="_blank"
-             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
-            View source &#8594;
+             style="color:#ffa500;font-size:11px;font-weight:700;text-decoration:none;
+                    letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+                    border-bottom:1px solid #cc8400;padding-bottom:1px">
+            &gt; view source
           </a>
         </div>
-        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
-            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">SpaceX</span>
+        <div style="background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffa500;padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="border:1px solid #5ec8ff;color:#5ec8ff;background:transparent;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">News</span>
+            <span style="border:1px solid #ffa500;color:#ffa500;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">SpaceX</span>
+            <span style="margin-left:auto;font-size:11px;color:#5a5a5a;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">2026-04-27 07:12 UTC</span>
           </div>
-          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">Forget Waiting Until June: Here Are 3 Ways to Invest in SpaceX Before Its IPO - The Motley Fool</h3>
-          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-27 07:12 UTC</p>
-          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMimAFBVV95cUxPcUhYX3pYUVAtQlNoRU5ZYjdHa0RQVjl2bDZxaG8tWlVDTDBNSDhuRTUyU21MNV9uZm1NQjZkM1FjN3d2U0hBaEE1ZTd0VFcxVGxhNmRxbHVKYVBOTUdOTHNhT3diRTRvTHpZcU5IRVpPTmhrV3FmaVktUnRtSUR3blJFeUxmX2lXQ0hFamMwREhfUTFOTkNaRg?oc=5" target="_blank">Forget Waiting Until </em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
+          <h3 style="margin:0 0 8px;font-size:14px;color:#e6e6e6;font-weight:600;letter-spacing:.2px">Forget Waiting Until June: Here Are 3 Ways to Invest in SpaceX Before Its IPO - The Motley Fool</h3>
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.65;color:#8a8a8a">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMimAFBVV95cUxPcUhYX3pYUVAtQlNoRU5ZYjdHa0RQVjl2bDZxaG8tWlVDTDBNSDhuRTUyU21MNV9uZm1NQjZkM1FjN3d2U0hBaEE1ZTd0VFcxVGxhNmRxbHVKYVBOTUdOTHNhT3diRTRvTHpZcU5IRVpPTmhrV3FmaVktUnRtSUR3blJFeUxmX2lXQ0hFamMwREhfUTFOTkNaRg?oc=5" target="_blank">Forget Waiting Until </em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
           <a href="https://news.google.com/rss/articles/CBMimAFBVV95cUxPcUhYX3pYUVAtQlNoRU5ZYjdHa0RQVjl2bDZxaG8tWlVDTDBNSDhuRTUyU21MNV9uZm1NQjZkM1FjN3d2U0hBaEE1ZTd0VFcxVGxhNmRxbHVKYVBOTUdOTHNhT3diRTRvTHpZcU5IRVpPTmhrV3FmaVktUnRtSUR3blJFeUxmX2lXQ0hFamMwREhfUTFOTkNaRg?oc=5" target="_blank"
-             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
-            View source &#8594;
+             style="color:#ffa500;font-size:11px;font-weight:700;text-decoration:none;
+                    letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+                    border-bottom:1px solid #cc8400;padding-bottom:1px">
+            &gt; view source
           </a>
         </div>
-        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
-            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">SpaceX</span>
+        <div style="background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffa500;padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="border:1px solid #5ec8ff;color:#5ec8ff;background:transparent;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">News</span>
+            <span style="border:1px solid #ffa500;color:#ffa500;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">SpaceX</span>
+            <span style="margin-left:auto;font-size:11px;color:#5a5a5a;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">2026-04-27 07:12 UTC</span>
           </div>
-          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">SpaceX IPO 2026: Baron Partners Fund (BPTRX) as a Pre-IPO Investment Option - News and Statistics - IndexBox</h3>
-          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-27 07:12 UTC</p>
-          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMinwFBVV95cUxQcHFsUHgtUVR1bHVkU1JPQ251U29ZbUI5MHZqMThiYTV2SVJzYnpMRzZqV3BCaF8taVpIbmV1bXZISy1UaFBQcjNKZGtYYTJMOWVwQng0YVBBT1pBQ3JfNWcwSXBKX1EyN25OcGtNaG9JbWdBcmxCVFRGQmo3WEFwZGhpd21lbEJRVDktMnVRcjZoZ1E1aTVpYzRZcFZnMDA?oc=5" target="_blank">SpaceX IPO 2</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
+          <h3 style="margin:0 0 8px;font-size:14px;color:#e6e6e6;font-weight:600;letter-spacing:.2px">SpaceX IPO 2026: Baron Partners Fund (BPTRX) as a Pre-IPO Investment Option - News and Statistics - IndexBox</h3>
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.65;color:#8a8a8a">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMinwFBVV95cUxQcHFsUHgtUVR1bHVkU1JPQ251U29ZbUI5MHZqMThiYTV2SVJzYnpMRzZqV3BCaF8taVpIbmV1bXZISy1UaFBQcjNKZGtYYTJMOWVwQng0YVBBT1pBQ3JfNWcwSXBKX1EyN25OcGtNaG9JbWdBcmxCVFRGQmo3WEFwZGhpd21lbEJRVDktMnVRcjZoZ1E1aTVpYzRZcFZnMDA?oc=5" target="_blank">SpaceX IPO 2</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
           <a href="https://news.google.com/rss/articles/CBMinwFBVV95cUxQcHFsUHgtUVR1bHVkU1JPQ251U29ZbUI5MHZqMThiYTV2SVJzYnpMRzZqV3BCaF8taVpIbmV1bXZISy1UaFBQcjNKZGtYYTJMOWVwQng0YVBBT1pBQ3JfNWcwSXBKX1EyN25OcGtNaG9JbWdBcmxCVFRGQmo3WEFwZGhpd21lbEJRVDktMnVRcjZoZ1E1aTVpYzRZcFZnMDA?oc=5" target="_blank"
-             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
-            View source &#8594;
+             style="color:#ffa500;font-size:11px;font-weight:700;text-decoration:none;
+                    letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+                    border-bottom:1px solid #cc8400;padding-bottom:1px">
+            &gt; view source
           </a>
         </div>
-        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
-            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">SpaceX</span>
+        <div style="background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffa500;padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="border:1px solid #5ec8ff;color:#5ec8ff;background:transparent;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">News</span>
+            <span style="border:1px solid #ffa500;color:#ffa500;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">SpaceX</span>
+            <span style="margin-left:auto;font-size:11px;color:#5a5a5a;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">2026-04-27 07:12 UTC</span>
           </div>
-          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">The SpaceX IPO Could Make Millionaires. Here&#x27;s What Investors Need to Know. - AOL.com</h3>
-          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-27 07:12 UTC</p>
-          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMihgFBVV95cUxOUjhrZkFJbXVsTzQ2eVdoOE1RTUY0dUhPTDZBQnUyTmV1QUY3LURlZGpQNlpMRG9oOXl5OVFoQ2FTSmtPdm9DbUNVc0pjd3VIQXJlNzdmaVd2ZVFzbkpWVmpRNEVoSHV0c3YxX3NFRkVKaHpOLVlnaHl2U2hNWlZTODg2cndSUQ?oc=5" target="_blank">The SpaceX IPO Could Make Millionaires. Here'</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
+          <h3 style="margin:0 0 8px;font-size:14px;color:#e6e6e6;font-weight:600;letter-spacing:.2px">The SpaceX IPO Could Make Millionaires. Here&#x27;s What Investors Need to Know. - AOL.com</h3>
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.65;color:#8a8a8a">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMihgFBVV95cUxOUjhrZkFJbXVsTzQ2eVdoOE1RTUY0dUhPTDZBQnUyTmV1QUY3LURlZGpQNlpMRG9oOXl5OVFoQ2FTSmtPdm9DbUNVc0pjd3VIQXJlNzdmaVd2ZVFzbkpWVmpRNEVoSHV0c3YxX3NFRkVKaHpOLVlnaHl2U2hNWlZTODg2cndSUQ?oc=5" target="_blank">The SpaceX IPO Could Make Millionaires. Here'</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
           <a href="https://news.google.com/rss/articles/CBMihgFBVV95cUxOUjhrZkFJbXVsTzQ2eVdoOE1RTUY0dUhPTDZBQnUyTmV1QUY3LURlZGpQNlpMRG9oOXl5OVFoQ2FTSmtPdm9DbUNVc0pjd3VIQXJlNzdmaVd2ZVFzbkpWVmpRNEVoSHV0c3YxX3NFRkVKaHpOLVlnaHl2U2hNWlZTODg2cndSUQ?oc=5" target="_blank"
-             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
-            View source &#8594;
+             style="color:#ffa500;font-size:11px;font-weight:700;text-decoration:none;
+                    letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+                    border-bottom:1px solid #cc8400;padding-bottom:1px">
+            &gt; view source
           </a>
         </div>
-        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
-            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">SpaceX</span>
+        <div style="background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffa500;padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="border:1px solid #5ec8ff;color:#5ec8ff;background:transparent;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">News</span>
+            <span style="border:1px solid #ffa500;color:#ffa500;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">SpaceX</span>
+            <span style="margin-left:auto;font-size:11px;color:#5a5a5a;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">2026-04-27 04:05 UTC</span>
           </div>
-          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">SpaceX has had talks with Saudi fund for potential $5B investment in IPO - report - MSN</h3>
-          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-27 04:05 UTC</p>
-          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMi-wJBVV95cUxQR1FkeGpxelhPRGc4aTdqYVdxZEZvdTl3eWtBWjdUdU0zdGx4Q2xLUFIwRWNna0hxUFhZWFl0Rjdmd1VjV0FISGZsOE5USmQ3dmdfeE52S3ZZVW9ldDFJcnQxVjI4QWxQTU9BU3pnZEJSUF9qTmtYb19IemxHRlFJNzNHTXY5WVgwUjU4dWJXbjk0MGV6ZzhiN1JTOFg2cVhNcWs3cnQ2c3hhOTl3QXlodmZBTnBFckNNWm</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
+          <h3 style="margin:0 0 8px;font-size:14px;color:#e6e6e6;font-weight:600;letter-spacing:.2px">SpaceX has had talks with Saudi fund for potential $5B investment in IPO - report - MSN</h3>
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.65;color:#8a8a8a">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMi-wJBVV95cUxQR1FkeGpxelhPRGc4aTdqYVdxZEZvdTl3eWtBWjdUdU0zdGx4Q2xLUFIwRWNna0hxUFhZWFl0Rjdmd1VjV0FISGZsOE5USmQ3dmdfeE52S3ZZVW9ldDFJcnQxVjI4QWxQTU9BU3pnZEJSUF9qTmtYb19IemxHRlFJNzNHTXY5WVgwUjU4dWJXbjk0MGV6ZzhiN1JTOFg2cVhNcWs3cnQ2c3hhOTl3QXlodmZBTnBFckNNWm</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
           <a href="https://news.google.com/rss/articles/CBMi-wJBVV95cUxQR1FkeGpxelhPRGc4aTdqYVdxZEZvdTl3eWtBWjdUdU0zdGx4Q2xLUFIwRWNna0hxUFhZWFl0Rjdmd1VjV0FISGZsOE5USmQ3dmdfeE52S3ZZVW9ldDFJcnQxVjI4QWxQTU9BU3pnZEJSUF9qTmtYb19IemxHRlFJNzNHTXY5WVgwUjU4dWJXbjk0MGV6ZzhiN1JTOFg2cVhNcWs3cnQ2c3hhOTl3QXlodmZBTnBFckNNWmlIWkJnLXBMczVFUVVlX3dCUXNULURrN3lGT2pKWjg2MmpRRFp2M2NrNnQ0cmJYTENNT0tqc3RxM0N2QmUxRjV5QzhVRjRCSXpITkQxUlhRTDZBN3NmS2dNYTBKdlFJRXBIdXlocm5vZXVvY01nZHhsOV9UN3Itb2IxTlotY0FXa2dDY2hEa3BnWERoNmNSd2h4Q09uUW54ZmFRNGNZcHB4X3k4UVpuZl9OdC1iWjI0QjRhQmpmYTNYRXdkcFVSMFJB?oc=5" target="_blank"
-             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
-            View source &#8594;
+             style="color:#ffa500;font-size:11px;font-weight:700;text-decoration:none;
+                    letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+                    border-bottom:1px solid #cc8400;padding-bottom:1px">
+            &gt; view source
           </a>
         </div>
-        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
-            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">OpenAI</span>
+        <div style="background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffa500;padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="border:1px solid #5ec8ff;color:#5ec8ff;background:transparent;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">News</span>
+            <span style="border:1px solid #ffa500;color:#ffa500;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">OpenAI</span>
+            <span style="margin-left:auto;font-size:11px;color:#5a5a5a;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">2026-04-27 04:05 UTC</span>
           </div>
-          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">Robinhood (HOOD) Investment Fund Acquires $75M Stake in OpenAI to Expand Retail Access - Insider Monkey</h3>
-          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-27 04:05 UTC</p>
-          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>OpenAI</strong> (currently valued at <strong>~$157B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMizgFBVV95cUxNVjhzWlc5YU1ZZGxmT1k4Y19XYVhTQXpTczFzSGM3NXY2Z2FXaXB0NU00RVJ5R29ndGNUV0E0SWlGMWRodlZ2QzZQSHRrb2NrYkp6U0RlNE9rQk5kbHVUbFJxb2xjNEVKQmtzWWx4STVIdHlZdHlhOTI5TjBsS0F4aHFwQ3lyRmwzZjk5ajRYTEt5VVp2U2RPa05maUQ0V2l3MlFPSFN4NHUtM1c3NTBxdTNzV3R0VmZ2a2</em><br><br>This may indicate a new public vehicle giving retail investors access to OpenAI equity — which is otherwise unavailable on public markets.</p>
+          <h3 style="margin:0 0 8px;font-size:14px;color:#e6e6e6;font-weight:600;letter-spacing:.2px">Robinhood (HOOD) Investment Fund Acquires $75M Stake in OpenAI to Expand Retail Access - Insider Monkey</h3>
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.65;color:#8a8a8a">A news article was detected mentioning <strong>OpenAI</strong> (currently valued at <strong>~$157B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMizgFBVV95cUxNVjhzWlc5YU1ZZGxmT1k4Y19XYVhTQXpTczFzSGM3NXY2Z2FXaXB0NU00RVJ5R29ndGNUV0E0SWlGMWRodlZ2QzZQSHRrb2NrYkp6U0RlNE9rQk5kbHVUbFJxb2xjNEVKQmtzWWx4STVIdHlZdHlhOTI5TjBsS0F4aHFwQ3lyRmwzZjk5ajRYTEt5VVp2U2RPa05maUQ0V2l3MlFPSFN4NHUtM1c3NTBxdTNzV3R0VmZ2a2</em><br><br>This may indicate a new public vehicle giving retail investors access to OpenAI equity — which is otherwise unavailable on public markets.</p>
           <a href="https://news.google.com/rss/articles/CBMizgFBVV95cUxNVjhzWlc5YU1ZZGxmT1k4Y19XYVhTQXpTczFzSGM3NXY2Z2FXaXB0NU00RVJ5R29ndGNUV0E0SWlGMWRodlZ2QzZQSHRrb2NrYkp6U0RlNE9rQk5kbHVUbFJxb2xjNEVKQmtzWWx4STVIdHlZdHlhOTI5TjBsS0F4aHFwQ3lyRmwzZjk5ajRYTEt5VVp2U2RPa05maUQ0V2l3MlFPSFN4NHUtM1c3NTBxdTNzV3R0VmZ2a2NVVEphcTJXWDB1TWw4UzZZV090Z9IBzgFBVV95cUxNVjhzWlc5YU1ZZGxmT1k4Y19XYVhTQXpTczFzSGM3NXY2Z2FXaXB0NU00RVJ5R29ndGNUV0E0SWlGMWRodlZ2QzZQSHRrb2NrYkp6U0RlNE9rQk5kbHVUbFJxb2xjNEVKQmtzWWx4STVIdHlZdHlhOTI5TjBsS0F4aHFwQ3lyRmwzZjk5ajRYTEt5VVp2U2RPa05maUQ0V2l3MlFPSFN4NHUtM1c3NTBxdTNzV3R0VmZ2a2NVVEphcTJXWDB1TWw4UzZZV090Zw?oc=5" target="_blank"
-             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
-            View source &#8594;
+             style="color:#ffa500;font-size:11px;font-weight:700;text-decoration:none;
+                    letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+                    border-bottom:1px solid #cc8400;padding-bottom:1px">
+            &gt; view source
           </a>
         </div>
-        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
-            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">Anthropic</span>
+        <div style="background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffa500;padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="border:1px solid #5ec8ff;color:#5ec8ff;background:transparent;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">News</span>
+            <span style="border:1px solid #ffa500;color:#ffa500;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">Anthropic</span>
+            <span style="margin-left:auto;font-size:11px;color:#5a5a5a;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">2026-04-27 00:02 UTC</span>
           </div>
-          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">Anthropic’s paid users reportedly doubled ahead of IPO – retail piles into proxy funds - MSN</h3>
-          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-27 00:02 UTC</p>
-          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>Anthropic</strong> (currently valued at <strong>~$61B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMiuANBVV95cUxQdXdySkpvWkZDOS1LaVlTREdPeElmd3hqZkVyV3hST0gwQ09MRlczdHIzRDlaNDBrYUZZb3hxeTB3UVRTS1U4el9jcW91VGh6TlVhWEdoSlJpa3F2S1hHS09LRFNtWWdXeGJpal82bXNQR3c0QWxRR2o0OEREbDF4RzhudWh2ZDhIVVhkSkxJMWxfNjZGYmlMeDhiRU1pREx6WEl0MENObG1xY0FfSGpZeWsxamJ6MlVWVz</em><br><br>This may indicate a new public vehicle giving retail investors access to Anthropic equity — which is otherwise unavailable on public markets.</p>
+          <h3 style="margin:0 0 8px;font-size:14px;color:#e6e6e6;font-weight:600;letter-spacing:.2px">Anthropic’s paid users reportedly doubled ahead of IPO – retail piles into proxy funds - MSN</h3>
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.65;color:#8a8a8a">A news article was detected mentioning <strong>Anthropic</strong> (currently valued at <strong>~$61B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMiuANBVV95cUxQdXdySkpvWkZDOS1LaVlTREdPeElmd3hqZkVyV3hST0gwQ09MRlczdHIzRDlaNDBrYUZZb3hxeTB3UVRTS1U4el9jcW91VGh6TlVhWEdoSlJpa3F2S1hHS09LRFNtWWdXeGJpal82bXNQR3c0QWxRR2o0OEREbDF4RzhudWh2ZDhIVVhkSkxJMWxfNjZGYmlMeDhiRU1pREx6WEl0MENObG1xY0FfSGpZeWsxamJ6MlVWVz</em><br><br>This may indicate a new public vehicle giving retail investors access to Anthropic equity — which is otherwise unavailable on public markets.</p>
           <a href="https://news.google.com/rss/articles/CBMiuANBVV95cUxQdXdySkpvWkZDOS1LaVlTREdPeElmd3hqZkVyV3hST0gwQ09MRlczdHIzRDlaNDBrYUZZb3hxeTB3UVRTS1U4el9jcW91VGh6TlVhWEdoSlJpa3F2S1hHS09LRFNtWWdXeGJpal82bXNQR3c0QWxRR2o0OEREbDF4RzhudWh2ZDhIVVhkSkxJMWxfNjZGYmlMeDhiRU1pREx6WEl0MENObG1xY0FfSGpZeWsxamJ6MlVWVzZwYUEtYUY4aVJ4TzRKWnItLVd0NUhGc3NrTnRYS2tHUExBNzg4MUFqZzBOalo5S0ZjZWt6cnBjbTA4ZVFrYWRRRzJ5X1pXZ1NrNVd0bF80ZTNCZXZOT1l1c2ZPRl9LY0R4VERBQ3l5RXhFc09UZWgwemZnY3VrLVJaNnc5cUs1UVlaMmdjYVBCVzF0VVZXanBmZkZRaFR2RGRLVUNVTC16ZEZqZlNuQWU2RHdkdnJDR1VmbUpWWTY5eS1sLVhsdWNFZ0o3NWZ3czFXR29WWUxLOUZaZFM0Nm5PaHFZd2d2amk1V2wtblp0X1BEYjBiOXRLdUNQRm9sQ3NaMFlpUA?oc=5" target="_blank"
-             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
-            View source &#8594;
+             style="color:#ffa500;font-size:11px;font-weight:700;text-decoration:none;
+                    letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+                    border-bottom:1px solid #cc8400;padding-bottom:1px">
+            &gt; view source
           </a>
         </div>
-        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
-            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">OpenAI</span>
+        <div style="background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffa500;padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="border:1px solid #5ec8ff;color:#5ec8ff;background:transparent;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">News</span>
+            <span style="border:1px solid #ffa500;color:#ffa500;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">OpenAI</span>
+            <span style="margin-left:auto;font-size:11px;color:#5a5a5a;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">2026-04-26 22:01 UTC</span>
           </div>
-          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">Robinhood (HOOD) Investment Fund Acquires $75M Stake in OpenAI to Expand Retail Access - Yahoo Finance</h3>
-          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-26 22:01 UTC</p>
-          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>OpenAI</strong> (currently valued at <strong>~$157B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMipwFBVV95cUxONl9ha3FhWXVhbkRVMHdRRnhCa1lwTi1zMFU1d05hRzJVU25keXdKNUZYZDJHNjRmTFJ0aU5ZNjJNMnFrT1Nqb0ZYb3JULW1ZWkEyQ0ZzaHVtb3JCTEpYZVZidUpIT2lyRHFGR0prTjZscXl5N29UMmtqamh6TXlFdU5EQjhKdXRZQ0VpVUpySE9qem9JYVFDWjR5RHdfNGtXSzJQYzFhVQ?oc=5" target="_blank">R</em><br><br>This may indicate a new public vehicle giving retail investors access to OpenAI equity — which is otherwise unavailable on public markets.</p>
+          <h3 style="margin:0 0 8px;font-size:14px;color:#e6e6e6;font-weight:600;letter-spacing:.2px">Robinhood (HOOD) Investment Fund Acquires $75M Stake in OpenAI to Expand Retail Access - Yahoo Finance</h3>
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.65;color:#8a8a8a">A news article was detected mentioning <strong>OpenAI</strong> (currently valued at <strong>~$157B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMipwFBVV95cUxONl9ha3FhWXVhbkRVMHdRRnhCa1lwTi1zMFU1d05hRzJVU25keXdKNUZYZDJHNjRmTFJ0aU5ZNjJNMnFrT1Nqb0ZYb3JULW1ZWkEyQ0ZzaHVtb3JCTEpYZVZidUpIT2lyRHFGR0prTjZscXl5N29UMmtqamh6TXlFdU5EQjhKdXRZQ0VpVUpySE9qem9JYVFDWjR5RHdfNGtXSzJQYzFhVQ?oc=5" target="_blank">R</em><br><br>This may indicate a new public vehicle giving retail investors access to OpenAI equity — which is otherwise unavailable on public markets.</p>
           <a href="https://news.google.com/rss/articles/CBMipwFBVV95cUxONl9ha3FhWXVhbkRVMHdRRnhCa1lwTi1zMFU1d05hRzJVU25keXdKNUZYZDJHNjRmTFJ0aU5ZNjJNMnFrT1Nqb0ZYb3JULW1ZWkEyQ0ZzaHVtb3JCTEpYZVZidUpIT2lyRHFGR0prTjZscXl5N29UMmtqamh6TXlFdU5EQjhKdXRZQ0VpVUpySE9qem9JYVFDWjR5RHdfNGtXSzJQYzFhVQ?oc=5" target="_blank"
-             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
-            View source &#8594;
+             style="color:#ffa500;font-size:11px;font-weight:700;text-decoration:none;
+                    letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+                    border-bottom:1px solid #cc8400;padding-bottom:1px">
+            &gt; view source
           </a>
         </div>
-        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
-            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">OpenAI</span>
+        <div style="background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffa500;padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="border:1px solid #5ec8ff;color:#5ec8ff;background:transparent;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">News</span>
+            <span style="border:1px solid #ffa500;color:#ffa500;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">OpenAI</span>
+            <span style="margin-left:auto;font-size:11px;color:#5a5a5a;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">2026-04-26 18:04 UTC</span>
           </div>
-          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">Robinhood (HOOD) Investment Fund Acquires $75M Stake in OpenAI to Expand Retail Access - insidermonkey.com</h3>
-          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-26 18:04 UTC</p>
-          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>OpenAI</strong> (currently valued at <strong>~$157B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMixgFBVV95cUxOUnh0WklvSklBSUlzcV80TXJGbXViQ0tSdi1iSnJLaDQ0SDN2WTQwanVVY04tb1RGS1k2MjY2cEhTU1NGZUhwZzFBNUJSOTg1c0c4V3FLZ0wybzFTZWoxOFZyaUV6VEplOWR3ZzZObC15WHRFTF9KRTBBT0ZsMWVrSUhscFVuZUJHZ0lOQzFiSWZ4WTBxemxZdTJTZi1DU1ZSRkphdU9MNXJKbUhlZ1V1Z3gyVEpLNm5uUD</em><br><br>This may indicate a new public vehicle giving retail investors access to OpenAI equity — which is otherwise unavailable on public markets.</p>
+          <h3 style="margin:0 0 8px;font-size:14px;color:#e6e6e6;font-weight:600;letter-spacing:.2px">Robinhood (HOOD) Investment Fund Acquires $75M Stake in OpenAI to Expand Retail Access - insidermonkey.com</h3>
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.65;color:#8a8a8a">A news article was detected mentioning <strong>OpenAI</strong> (currently valued at <strong>~$157B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMixgFBVV95cUxOUnh0WklvSklBSUlzcV80TXJGbXViQ0tSdi1iSnJLaDQ0SDN2WTQwanVVY04tb1RGS1k2MjY2cEhTU1NGZUhwZzFBNUJSOTg1c0c4V3FLZ0wybzFTZWoxOFZyaUV6VEplOWR3ZzZObC15WHRFTF9KRTBBT0ZsMWVrSUhscFVuZUJHZ0lOQzFiSWZ4WTBxemxZdTJTZi1DU1ZSRkphdU9MNXJKbUhlZ1V1Z3gyVEpLNm5uUD</em><br><br>This may indicate a new public vehicle giving retail investors access to OpenAI equity — which is otherwise unavailable on public markets.</p>
           <a href="https://news.google.com/rss/articles/CBMixgFBVV95cUxOUnh0WklvSklBSUlzcV80TXJGbXViQ0tSdi1iSnJLaDQ0SDN2WTQwanVVY04tb1RGS1k2MjY2cEhTU1NGZUhwZzFBNUJSOTg1c0c4V3FLZ0wybzFTZWoxOFZyaUV6VEplOWR3ZzZObC15WHRFTF9KRTBBT0ZsMWVrSUhscFVuZUJHZ0lOQzFiSWZ4WTBxemxZdTJTZi1DU1ZSRkphdU9MNXJKbUhlZ1V1Z3gyVEpLNm5uUDRKZDQ5VXlRVGtUQUHSAc4BQVVfeXFMTVY4c1pXOWFNWWRsZk9ZOGNfV2FYU0F6U3Mxc0hjNzV2NmdhV2lwdDVNNEVSeUdvZ3RjVFdBNElpRjFkaHZWdkM2UEh0a29ja2JKelNEZTRPa0JOZGx1VGxScW9sYzRFSkJrc1lseEk1SHR5WXR5YTkyOU4wbEtBeGhxcEN5ckZsM2Y5OWo0WExLeVVadlNkT2tOZmlENFdpdzJRT0hTeDR1LTNXNzUwcXUzc1d0dFZmdmtjVVRKYXEyV1gwdU1sOFM2WVdPdGc?oc=5" target="_blank"
-             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
-            View source &#8594;
+             style="color:#ffa500;font-size:11px;font-weight:700;text-decoration:none;
+                    letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+                    border-bottom:1px solid #cc8400;padding-bottom:1px">
+            &gt; view source
           </a>
         </div>
-        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
-            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">SpaceX</span>
+        <div style="background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffa500;padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="border:1px solid #5ec8ff;color:#5ec8ff;background:transparent;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">News</span>
+            <span style="border:1px solid #ffa500;color:#ffa500;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">SpaceX</span>
+            <span style="margin-left:auto;font-size:11px;color:#5a5a5a;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">2026-04-26 16:04 UTC</span>
           </div>
-          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">Musk’s $1.75T SpaceX IPO: A Historic Bet on Space, AI, and Bitcoin - TradingKey</h3>
-          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-26 16:04 UTC</p>
-          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMixAFBVV95cUxQbmt4ZE82b010RDgzR2JsSjFmSWcwN2xjUXlwME51M0FxZ293WF9pT25FY1o4TUNzNTZ2UWpTOXR2WEpKOGVuRmpkY3RPdkMxTV9YeGxKUjBiZmpkZzRnMm1nbFRtVGpKNDZZamF6S3hveVhMTDdGOGpwaHpPV0Q1akFLUlhjamg1VDZlN0FxMFM5bk55WWF3S0NFVkljOFE5S0FyUnlUeFZkay1wcUVLcGR4RDJvTFZwME</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
+          <h3 style="margin:0 0 8px;font-size:14px;color:#e6e6e6;font-weight:600;letter-spacing:.2px">Musk’s $1.75T SpaceX IPO: A Historic Bet on Space, AI, and Bitcoin - TradingKey</h3>
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.65;color:#8a8a8a">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMixAFBVV95cUxQbmt4ZE82b010RDgzR2JsSjFmSWcwN2xjUXlwME51M0FxZ293WF9pT25FY1o4TUNzNTZ2UWpTOXR2WEpKOGVuRmpkY3RPdkMxTV9YeGxKUjBiZmpkZzRnMm1nbFRtVGpKNDZZamF6S3hveVhMTDdGOGpwaHpPV0Q1akFLUlhjamg1VDZlN0FxMFM5bk55WWF3S0NFVkljOFE5S0FyUnlUeFZkay1wcUVLcGR4RDJvTFZwME</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
           <a href="https://news.google.com/rss/articles/CBMixAFBVV95cUxQbmt4ZE82b010RDgzR2JsSjFmSWcwN2xjUXlwME51M0FxZ293WF9pT25FY1o4TUNzNTZ2UWpTOXR2WEpKOGVuRmpkY3RPdkMxTV9YeGxKUjBiZmpkZzRnMm1nbFRtVGpKNDZZamF6S3hveVhMTDdGOGpwaHpPV0Q1akFLUlhjamg1VDZlN0FxMFM5bk55WWF3S0NFVkljOFE5S0FyUnlUeFZkay1wcUVLcGR4RDJvTFZwMEdvVDFRTHI0SGxC?oc=5" target="_blank"
-             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
-            View source &#8594;
+             style="color:#ffa500;font-size:11px;font-weight:700;text-decoration:none;
+                    letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+                    border-bottom:1px solid #cc8400;padding-bottom:1px">
+            &gt; view source
           </a>
         </div>
-        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
-            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">SpaceX</span>
+        <div style="background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffa500;padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="border:1px solid #5ec8ff;color:#5ec8ff;background:transparent;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">News</span>
+            <span style="border:1px solid #ffa500;color:#ffa500;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">SpaceX</span>
+            <span style="margin-left:auto;font-size:11px;color:#5a5a5a;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">2026-04-26 11:36 UTC</span>
           </div>
-          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">Alphabet poised for $100 billion windfall on SpaceX investment - MSN</h3>
-          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-26 11:36 UTC</p>
-          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMinANBVV95cUxOVUx5TzlHM045NldYaHk4Z2FST3Byd0RSS3llMlZXbjdDU0VIVHlxQWdaU1c2RHlrYWRzaTRpRE9HNm4wVzh3ZTNMdTFuQ0xqUzZsQVduOHZvX2czZTh5aUNsTUpBZkFpNFB6SUZKOWwtdERQalJnTlpsVFZOeWxBUEk2Skp5OEtidWZRdDEwMURKUmg3eWhVVFZSZG9rSWRtVFlIMlhBaVgyZU13MzIyM0VmMGxnQ04xa3</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
+          <h3 style="margin:0 0 8px;font-size:14px;color:#e6e6e6;font-weight:600;letter-spacing:.2px">Alphabet poised for $100 billion windfall on SpaceX investment - MSN</h3>
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.65;color:#8a8a8a">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMinANBVV95cUxOVUx5TzlHM045NldYaHk4Z2FST3Byd0RSS3llMlZXbjdDU0VIVHlxQWdaU1c2RHlrYWRzaTRpRE9HNm4wVzh3ZTNMdTFuQ0xqUzZsQVduOHZvX2czZTh5aUNsTUpBZkFpNFB6SUZKOWwtdERQalJnTlpsVFZOeWxBUEk2Skp5OEtidWZRdDEwMURKUmg3eWhVVFZSZG9rSWRtVFlIMlhBaVgyZU13MzIyM0VmMGxnQ04xa3</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
           <a href="https://news.google.com/rss/articles/CBMinANBVV95cUxOVUx5TzlHM045NldYaHk4Z2FST3Byd0RSS3llMlZXbjdDU0VIVHlxQWdaU1c2RHlrYWRzaTRpRE9HNm4wVzh3ZTNMdTFuQ0xqUzZsQVduOHZvX2czZTh5aUNsTUpBZkFpNFB6SUZKOWwtdERQalJnTlpsVFZOeWxBUEk2Skp5OEtidWZRdDEwMURKUmg3eWhVVFZSZG9rSWRtVFlIMlhBaVgyZU13MzIyM0VmMGxnQ04xa3Bxd0dWSjNyaWhRTWEtMnp4RHBkYWxwLTNqNVN4TklpYWFfNHZ1Y09Pa0hOYVVxSzJBWEpHZXpnT21RRjFESkpDSVp2LWpBbU5uUnpLVlJkaGlkcWdoT2FaaGl4d0oyTG5nZFZGMExLNVFhejJOY3pZUmtMSzR2V3J6M2JVRUY3bXUyQ2s3ZTJMQWxSSjREOUU0eno0VDU5UlhLTUFYRWdzUjNHcXZZUl85VVZpZV9fMDFTd2d4ZnczM3FBTFhHSTdMbWVFajl0T1c3ejRTX2JaNHFjcEFzTnVXby1WaURoSU5C?oc=5" target="_blank"
-             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
-            View source &#8594;
+             style="color:#ffa500;font-size:11px;font-weight:700;text-decoration:none;
+                    letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+                    border-bottom:1px solid #cc8400;padding-bottom:1px">
+            &gt; view source
           </a>
         </div>
-        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
-            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">SpaceX</span>
+        <div style="background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffa500;padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="border:1px solid #5ec8ff;color:#5ec8ff;background:transparent;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">News</span>
+            <span style="border:1px solid #ffa500;color:#ffa500;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">SpaceX</span>
+            <span style="margin-left:auto;font-size:11px;color:#5a5a5a;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">2026-04-26 10:41 UTC</span>
           </div>
-          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">SpaceX reportedly targets valuation in excess of $2 trillion in its IPO - MSN</h3>
-          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-26 10:41 UTC</p>
-          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMi9gJBVV95cUxNQ3lXVmkyWF9FTXJtRHh1R0dhT250WWppWGtSOXZxS1pMRzk2bFBFWk52dUdCSE9WWmpYQWNWaWxIdkFQM29JZkRrNktUaEo1dUFZV2hYMTJ6cklHWVhsYTdBLTRuWV9oVlNmaGQxbWFaRkYweTd6RHBqdDhCS3FQbExvVE4yV0h0bU1tb1pIcXJpZEFGM1l4XzlGa09jdWx1VXdYNGJ4LWtzRXlmN2c2UGRJU2Z1SlkwSG</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
+          <h3 style="margin:0 0 8px;font-size:14px;color:#e6e6e6;font-weight:600;letter-spacing:.2px">SpaceX reportedly targets valuation in excess of $2 trillion in its IPO - MSN</h3>
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.65;color:#8a8a8a">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMi9gJBVV95cUxNQ3lXVmkyWF9FTXJtRHh1R0dhT250WWppWGtSOXZxS1pMRzk2bFBFWk52dUdCSE9WWmpYQWNWaWxIdkFQM29JZkRrNktUaEo1dUFZV2hYMTJ6cklHWVhsYTdBLTRuWV9oVlNmaGQxbWFaRkYweTd6RHBqdDhCS3FQbExvVE4yV0h0bU1tb1pIcXJpZEFGM1l4XzlGa09jdWx1VXdYNGJ4LWtzRXlmN2c2UGRJU2Z1SlkwSG</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
           <a href="https://news.google.com/rss/articles/CBMi9gJBVV95cUxNQ3lXVmkyWF9FTXJtRHh1R0dhT250WWppWGtSOXZxS1pMRzk2bFBFWk52dUdCSE9WWmpYQWNWaWxIdkFQM29JZkRrNktUaEo1dUFZV2hYMTJ6cklHWVhsYTdBLTRuWV9oVlNmaGQxbWFaRkYweTd6RHBqdDhCS3FQbExvVE4yV0h0bU1tb1pIcXJpZEFGM1l4XzlGa09jdWx1VXdYNGJ4LWtzRXlmN2c2UGRJU2Z1SlkwSG9Makg1cWNqcmRlTUJWeWVfN3NRc2NlczcwX3YwU1JxZWt4UUF5U0YxbENBb2ZoTXNSV1JRRlBFeUk0Y1dMTFVBVnVfUGZDYzhOeGNhbmpWQlQ1aWFkTXU5TTV6aUlKc2RSSGdnUkZmcWZkZzhEakhBbWxGMjhiZk45eEx2S1pTeWVlVXJWQUdvYjJwSGMxWUR5cVBJOW5rRUZOY2RYMDdBQzIyYk9HTFpRWkl4NUFVTzVJZ1NKOTc3UDFKZw?oc=5" target="_blank"
-             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
-            View source &#8594;
+             style="color:#ffa500;font-size:11px;font-weight:700;text-decoration:none;
+                    letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+                    border-bottom:1px solid #cc8400;padding-bottom:1px">
+            &gt; view source
           </a>
         </div>
-        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
-            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">SpaceX</span>
+        <div style="background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffa500;padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="border:1px solid #5ec8ff;color:#5ec8ff;background:transparent;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">News</span>
+            <span style="border:1px solid #ffa500;color:#ffa500;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">SpaceX</span>
+            <span style="margin-left:auto;font-size:11px;color:#5a5a5a;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">2026-04-26 02:25 UTC</span>
           </div>
-          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">Baron Partners Fund Offers Strategic Entry to SpaceX Stock Pre-IPO - HarianBasis.co</h3>
-          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-26 02:25 UTC</p>
-          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMifkFVX3lxTFBxM2szSFJVQ1BYODhaYU82R2NaMGpYTm5yVmsyOW1JazRpRzc3RFZ1LUZDeldBaERHWlpISWkwSG5vbXl2djVJRU53ZmtNUGlIU3FyNUNoUjU2LVJ4VlVxYmVmZGh2elpJQkhYWEtBUTBtYjhmYVhVc19OQ1NEZw?oc=5" target="_blank">Baron Partners Fund Offers Strategic Entry to SpaceX Stoc</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
+          <h3 style="margin:0 0 8px;font-size:14px;color:#e6e6e6;font-weight:600;letter-spacing:.2px">Baron Partners Fund Offers Strategic Entry to SpaceX Stock Pre-IPO - HarianBasis.co</h3>
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.65;color:#8a8a8a">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMifkFVX3lxTFBxM2szSFJVQ1BYODhaYU82R2NaMGpYTm5yVmsyOW1JazRpRzc3RFZ1LUZDeldBaERHWlpISWkwSG5vbXl2djVJRU53ZmtNUGlIU3FyNUNoUjU2LVJ4VlVxYmVmZGh2elpJQkhYWEtBUTBtYjhmYVhVc19OQ1NEZw?oc=5" target="_blank">Baron Partners Fund Offers Strategic Entry to SpaceX Stoc</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
           <a href="https://news.google.com/rss/articles/CBMifkFVX3lxTFBxM2szSFJVQ1BYODhaYU82R2NaMGpYTm5yVmsyOW1JazRpRzc3RFZ1LUZDeldBaERHWlpISWkwSG5vbXl2djVJRU53ZmtNUGlIU3FyNUNoUjU2LVJ4VlVxYmVmZGh2elpJQkhYWEtBUTBtYjhmYVhVc19OQ1NEZw?oc=5" target="_blank"
-             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
-            View source &#8594;
+             style="color:#ffa500;font-size:11px;font-weight:700;text-decoration:none;
+                    letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+                    border-bottom:1px solid #cc8400;padding-bottom:1px">
+            &gt; view source
           </a>
         </div>
-        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
-            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">SpaceX</span>
+        <div style="background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffa500;padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="border:1px solid #5ec8ff;color:#5ec8ff;background:transparent;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">News</span>
+            <span style="border:1px solid #ffa500;color:#ffa500;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">SpaceX</span>
+            <span style="margin-left:auto;font-size:11px;color:#5a5a5a;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">2026-04-26 01:12 UTC</span>
           </div>
-          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">SpaceX&#x27;s IPO Could Be the Biggest in a Decade. Here&#x27;s How to Get Exposure Right Now. - Yahoo Finance</h3>
-          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-26 01:12 UTC</p>
-          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMingFBVV95cUxNN0xWaENoT0FvUDBHdDJieTFRdk1TaGQ5TGRZQXY3MHQyRUh4Zy0wTGNsbW10VE1aWTNFbDl3WDU3eDk3QlZsUjN4Y3J0ZUhBVXlnN0FVYnVhRUF1YW1VNmFubDJDZmFnRDZfLXdRdS14MjZJSUdyeDhjSW1XeElLMEIwZGE5Wk1IbURPZXBZTldPWmxiX1ZGNFlfeVY2Zw?oc=5" target="_blank">SpaceX's IPO </em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
+          <h3 style="margin:0 0 8px;font-size:14px;color:#e6e6e6;font-weight:600;letter-spacing:.2px">SpaceX&#x27;s IPO Could Be the Biggest in a Decade. Here&#x27;s How to Get Exposure Right Now. - Yahoo Finance</h3>
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.65;color:#8a8a8a">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMingFBVV95cUxNN0xWaENoT0FvUDBHdDJieTFRdk1TaGQ5TGRZQXY3MHQyRUh4Zy0wTGNsbW10VE1aWTNFbDl3WDU3eDk3QlZsUjN4Y3J0ZUhBVXlnN0FVYnVhRUF1YW1VNmFubDJDZmFnRDZfLXdRdS14MjZJSUdyeDhjSW1XeElLMEIwZGE5Wk1IbURPZXBZTldPWmxiX1ZGNFlfeVY2Zw?oc=5" target="_blank">SpaceX's IPO </em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
           <a href="https://news.google.com/rss/articles/CBMingFBVV95cUxNN0xWaENoT0FvUDBHdDJieTFRdk1TaGQ5TGRZQXY3MHQyRUh4Zy0wTGNsbW10VE1aWTNFbDl3WDU3eDk3QlZsUjN4Y3J0ZUhBVXlnN0FVYnVhRUF1YW1VNmFubDJDZmFnRDZfLXdRdS14MjZJSUdyeDhjSW1XeElLMEIwZGE5Wk1IbURPZXBZTldPWmxiX1ZGNFlfeVY2Zw?oc=5" target="_blank"
-             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
-            View source &#8594;
+             style="color:#ffa500;font-size:11px;font-weight:700;text-decoration:none;
+                    letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+                    border-bottom:1px solid #cc8400;padding-bottom:1px">
+            &gt; view source
           </a>
         </div>
-        <div style="background:#f9fafb;border-left:4px solid #2563eb;padding:16px 18px;margin-bottom:14px;border-radius:6px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="background:#0891b2;color:#fff;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.5px">News</span>
-            <span style="background:#eff6ff;color:#1e40af;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600">SpaceX</span>
+        <div style="background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffa500;padding:14px 16px;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span style="border:1px solid #5ec8ff;color:#5ec8ff;background:transparent;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">News</span>
+            <span style="border:1px solid #ffa500;color:#ffa500;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">SpaceX</span>
+            <span style="margin-left:auto;font-size:11px;color:#5a5a5a;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace">2026-04-26 01:12 UTC</span>
           </div>
-          <h3 style="margin:0 0 4px;font-size:15px;color:#111827">SpaceX has had talks with Saudi fund for potential $5B investment in IPO - report - MSN</h3>
-          <p style="margin:0 0 10px;font-size:12px;color:#9ca3af">2026-04-26 01:12 UTC</p>
-          <p style="margin:0 0 12px;font-size:14px;line-height:1.65;color:#374151">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMi-wJBVV95cUxPMlU2ekxpWkxSR1dPck5LT2tCMEZtNTltTFFNMjg0V25MQXh5Q3FRc2RObnlvdkNpMHRTN09kMGwwV0U1M2FRc3U2MG5BUlBWbjRZQmNJekhMWTM0ZG1YX0Vzd1k0Z3RZeW9yemc4UGFYX1MxRnllLUZjWl95bmV6WUkyZ0NlTEIzekhaekFuNDA3dFpvckFIUElQeWpqUzlWOS1Pa3RkckI0RWZPelRSS2txLTl5ZEdqWF</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
+          <h3 style="margin:0 0 8px;font-size:14px;color:#e6e6e6;font-weight:600;letter-spacing:.2px">SpaceX has had talks with Saudi fund for potential $5B investment in IPO - report - MSN</h3>
+          <p style="margin:0 0 10px;font-size:13px;line-height:1.65;color:#8a8a8a">A news article was detected mentioning <strong>SpaceX</strong> (currently valued at <strong>~$350B</strong>) alongside investment opportunity keywords (IPO, fund, stake, etc.).<br><br><em><a href="https://news.google.com/rss/articles/CBMi-wJBVV95cUxPMlU2ekxpWkxSR1dPck5LT2tCMEZtNTltTFFNMjg0V25MQXh5Q3FRc2RObnlvdkNpMHRTN09kMGwwV0U1M2FRc3U2MG5BUlBWbjRZQmNJekhMWTM0ZG1YX0Vzd1k0Z3RZeW9yemc4UGFYX1MxRnllLUZjWl95bmV6WUkyZ0NlTEIzekhaekFuNDA3dFpvckFIUElQeWpqUzlWOS1Pa3RkckI0RWZPelRSS2txLTl5ZEdqWF</em><br><br>This may indicate a new public vehicle giving retail investors access to SpaceX equity — which is otherwise unavailable on public markets.</p>
           <a href="https://news.google.com/rss/articles/CBMi-wJBVV95cUxPMlU2ekxpWkxSR1dPck5LT2tCMEZtNTltTFFNMjg0V25MQXh5Q3FRc2RObnlvdkNpMHRTN09kMGwwV0U1M2FRc3U2MG5BUlBWbjRZQmNJekhMWTM0ZG1YX0Vzd1k0Z3RZeW9yemc4UGFYX1MxRnllLUZjWl95bmV6WUkyZ0NlTEIzekhaekFuNDA3dFpvckFIUElQeWpqUzlWOS1Pa3RkckI0RWZPelRSS2txLTl5ZEdqWF9vWFV5c2xKYXNMYlk2Z1ZzQXRGYTBfOEZwc3Z2SjJidVMwRFlaVzhZdzF4cHc3eXFfbnhwV0Q5bUJuMWRIQkxYcXVXVFE0LUllTExVelBZbDVaU1RoZlpjQ3Nmd0NkelFDQUxESkQwVDZrM241czNBanZBTGk5d1pZLXBkRXAwa095Z0VxMHR2TVZCQjBWRnZfdEsxZkVkbkViQVJNWXpkaF9nS3hBSDQwMi1lZktIWnRCQjlSNC10cjFhUFM4OFVF?oc=5" target="_blank"
-             style="color:#2563eb;font-size:13px;font-weight:600;text-decoration:none">
-            View source &#8594;
+             style="color:#ffa500;font-size:11px;font-weight:700;text-decoration:none;
+                    letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono','IBM Plex Mono','Fira Code',Menlo,Consolas,monospace;
+                    border-bottom:1px solid #cc8400;padding-bottom:1px">
+            &gt; view source
           </a>
         </div>
   </section>
 
   <section>
-    <h2>&#128268; Holdings Stock Alerts</h2>
-    <p style="font-size:13px;color:#6b7280;margin-bottom:14px">
-      Recorded when a known holding stock moved &gt;5&nbsp;% or saw 2.5&times;&nbsp;normal volume.
+    <h2>Holdings Stock Alerts</h2>
+    <p class="desc">
+      Recorded when a known holding stock moved &gt; 5% or saw 2.5&times; normal volume.
     </p>
-    <p class="empty">Nothing found yet — check back after the next run.</p>
+    <p class="empty">// nothing found yet — check back after the next run</p>
   </section>
 
-  <footer>IPO-Notif &bull; Data from SEC EDGAR, Google News, Yahoo Finance &bull; Not financial advice</footer>
+  <footer>
+    IPO-NOTIF<span class="sep">//</span>SEC EDGAR<span class="sep">//</span>GOOGLE NEWS<span class="sep">//</span>YAHOO FINANCE<span class="sep">//</span>NOT FINANCIAL ADVICE
+  </footer>
 </div>
 </body>
 </html>
