@@ -11,6 +11,8 @@ TARGET_COMPANIES = [
     "Databricks",
     "Epic Games",
     "Anduril",
+    "ElevenLabs",
+    "Revolut",
 ]
 
 # Estimated valuations (USD billions) for context in alerts — keep roughly updated
@@ -22,13 +24,15 @@ COMPANY_VALUATIONS = {
     "Databricks": "~$62B",
     "Epic Games": "~$32B",
     "Anduril":    "~$28B",
+    "ElevenLabs": "~$3.3B",
+    "Revolut":    "~$45B",
 }
 
 # Publicly traded companies/funds that hold meaningful stakes in the private companies above.
 # holdings_pct: approximate % of the fund/portfolio each private holding represents.
-# stake_significance: 'high' = private stakes dominate the stock's value;
-#                     'medium' = notable but not the whole story;
-#                     'low' = large company, small relative stake.
+# stake_significance: 'high'   = private stakes dominate the stock's value (pure play)
+#                     'medium' = meaningful exposure, stock moves on related news
+#                     'low'    = large company, private stake is small relative to market cap
 KNOWN_HOLDING_STOCKS = [
     {
         "ticker": "DXYZ",
@@ -42,6 +46,21 @@ KNOWN_HOLDING_STOCKS = [
             "Stripe":    "~4%",
         },
         "description": "Closed-end fund whose NAV is almost entirely private-company stakes. One of the only ways retail investors can buy SpaceX, OpenAI, and Anthropic in a brokerage account.",
+        "stake_significance": "high",
+    },
+    {
+        "ticker": "RVI",
+        "name": "Robinhood Ventures Fund I",
+        "holdings": ["OpenAI", "Stripe", "Databricks", "ElevenLabs", "Revolut", "Ramp"],
+        "holdings_pct": {
+            "OpenAI":     "~$75M invested (Apr 2026)",
+            "Stripe":     "~$14.6M invested",
+            "Databricks": "undisclosed stake",
+            "ElevenLabs": "undisclosed stake",
+            "Revolut":    "undisclosed stake",
+            "Ramp":       "undisclosed stake",
+        },
+        "description": "Robinhood's closed-end fund IPO'd March 6 2026 at $25/share ($658M fund). Dropped 16% on debut. Added a $75M OpenAI stake in April 2026. Pure retail access to pre-IPO unicorns.",
         "stake_significance": "high",
     },
     {
